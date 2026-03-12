@@ -1,8 +1,10 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
-import '../../../core/widgets/sound_card.dart';
 import '../../../data/models/sound_model.dart';
 import '../../../routes/app_routes.dart';
 import '../controllers/home_controller.dart';
@@ -12,6 +14,8 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -24,107 +28,307 @@ class HomeView extends GetView<HomeController> {
             ],
           ),
         ),
-        child: SafeArea(
-          child: CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                title: Text(
-                  AppStrings.appName,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 22,
+        child: Stack(
+          children: [
+            _AmbientBackground(size: size),
+            SafeArea(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 16,
+                    ),
+                    child: _HomeHeader(),
                   ),
-                ),
-                actions: [
-                  IconButton(
-                    icon: const Icon(Icons.library_music),
-                    onPressed: () => Get.toNamed(Routes.library),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.tune),
-                    onPressed: () => Get.toNamed(Routes.mixer),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 8,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _WelcomeSection(),
+                          const SizedBox(height: 24),
+                          _FeaturedSection(size: size, controller: controller),
+                          const SizedBox(height: 24),
+                          _CategoriesSection(controller: controller),
+                          const SizedBox(height: 32),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Featured Sounds',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                      const SizedBox(height: 16),
-                      GetBuilder<HomeController>(
-                        builder: (_) => _buildSoundGrid(controller.featuredSounds),
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        'Categories',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                      const SizedBox(height: 16),
-                      ...controller.categories.map((cat) => Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  cat.name,
-                                  style: Theme.of(context).textTheme.titleMedium,
-                                ),
-                                const SizedBox(height: 8),
-                                GetBuilder<HomeController>(
-                                  builder: (_) => _buildSoundGrid(
-                                      controller.getSoundsByCategory(cat.id)),
-                                ),
-                              ],
-                            ),
-                          )),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildSoundGrid(List<SoundModel> sounds) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 0.85,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
+}
+
+class _AmbientBackground extends StatelessWidget {
+  const _AmbientBackground({required this.size});
+
+  final Size size;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: size.width,
+      height: size.height,
+      child: Stack(
+        children: [
+          Positioned(
+            top: -size.height * 0.2,
+            left: size.width * 0.1,
+            right: size.width * 0.1,
+            child: Container(
+              height: size.height * 0.5,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    AppColors.accent.withOpacity(0.25),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: size.height * 0.12,
+            right: size.width * 0.12,
+            child: Icon(
+              Icons.dark_mode,
+              size: 96,
+              color: Colors.white.withOpacity(0.1),
+            ),
+          ),
+          Positioned(
+            top: size.height * 0.2,
+            left: size.width * 0.2,
+            child: Icon(
+              Icons.star,
+              size: 16,
+              color: Colors.white.withOpacity(0.15),
+            ),
+          ),
+          Positioned(
+            top: size.height * 0.16,
+            right: size.width * 0.3,
+            child: Icon(
+              Icons.star,
+              size: 12,
+              color: Colors.white.withOpacity(0.08),
+            ),
+          ),
+        ],
       ),
-      itemCount: sounds.length,
-      itemBuilder: (context, index) {
-        final sound = sounds[index];
-        return SoundCard(
-          title: sound.title,
-          icon: _getIconForCategory(sound.categoryId),
-          isPremium: sound.isPremium,
-          isFavorite: controller.isFavorite(sound.id),
-          onFavoriteTap: () => controller.toggleFavorite(sound.id),
-          onPremiumTap: () => Get.toNamed(Routes.premium),
-          onTap: () => Get.toNamed(Routes.player, arguments: sound),
-        );
-      },
+    );
+  }
+}
+
+class _HomeHeader extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _GlassIconButton(
+          icon: Icons.menu,
+          onTap: () => Get.toNamed(Routes.library),
+        ),
+        Text(
+          AppStrings.appName,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: AppColors.accent,
+                fontWeight: FontWeight.bold,
+              ),
+        ),
+        _GlassIconButton(
+          icon: Icons.person,
+          onTap: () => Get.toNamed(Routes.mixer),
+          backgroundColor: AppColors.accent.withOpacity(0.2),
+          iconColor: AppColors.accent,
+        ),
+      ],
+    );
+  }
+}
+
+class _WelcomeSection extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Good Night',
+          style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Ready for a peaceful sleep?',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.white70,
+              ),
+        ),
+      ],
+    );
+  }
+}
+
+class _FeaturedSection extends StatelessWidget {
+  const _FeaturedSection({
+    required this.size,
+    required this.controller,
+  });
+
+  final Size size;
+  final HomeController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Featured Sounds',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+            TextButton(
+              onPressed: () => Get.toNamed(Routes.library),
+              child: Text(
+                'View All',
+                style: TextStyle(
+                  color: AppColors.accent,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: size.height * 0.38,
+          child: GetBuilder<HomeController>(
+            builder: (_) {
+              final sounds = controller.featuredSounds;
+              if (sounds.isEmpty) {
+                return const SizedBox.shrink();
+              }
+
+              return ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: sounds.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 16),
+                itemBuilder: (context, index) {
+                  final sound = sounds[index];
+                  return _FeaturedSoundCard(
+                    sound: sound,
+                    onTap: () =>
+                        Get.toNamed(Routes.player, arguments: sound),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _CategoriesSection extends StatelessWidget {
+  const _CategoriesSection({required this.controller});
+
+  final HomeController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Categories',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+        ),
+        const SizedBox(height: 16),
+        GetBuilder<HomeController>(
+          builder: (_) {
+            final categories = controller.categories;
+            if (categories.isEmpty) {
+              return const SizedBox.shrink();
+            }
+
+            return GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate:
+                  const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 2.8,
+              ),
+              itemCount: categories.length,
+              itemBuilder: (context, index) {
+                final category = categories[index];
+                return _GlassContainer(
+                  borderRadius: 20,
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: AppColors.accent.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Icon(
+                          _iconForCategory(category.id),
+                          color: AppColors.accent,
+                          size: 18,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          category.name,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
+        ),
+      ],
     );
   }
 
-  IconData _getIconForCategory(String categoryId) {
+  IconData _iconForCategory(String categoryId) {
     switch (categoryId) {
       case 'rain':
         return Icons.water_drop;
@@ -137,5 +341,155 @@ class HomeView extends GetView<HomeController> {
       default:
         return Icons.music_note;
     }
+  }
+}
+
+class _GlassIconButton extends StatelessWidget {
+  const _GlassIconButton({
+    required this.icon,
+    required this.onTap,
+    this.backgroundColor,
+    this.iconColor,
+  });
+
+  final IconData icon;
+  final VoidCallback onTap;
+  final Color? backgroundColor;
+  final Color? iconColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: _GlassContainer(
+        padding: const EdgeInsets.all(10),
+        borderRadius: 20,
+        backgroundColor:
+            backgroundColor ?? Colors.white.withOpacity(0.06),
+        child: Icon(
+          icon,
+          size: 20,
+          color: iconColor ?? Colors.white,
+        ),
+      ),
+    );
+  }
+}
+
+class _GlassContainer extends StatelessWidget {
+  const _GlassContainer({
+    required this.child,
+    this.padding,
+    this.borderRadius = 24,
+    this.backgroundColor,
+  });
+
+  final Widget child;
+  final EdgeInsetsGeometry? padding;
+  final double borderRadius;
+  final Color? backgroundColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(borderRadius),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        child: Container(
+          padding: padding ?? const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(borderRadius),
+            color: backgroundColor ?? Colors.white.withOpacity(0.06),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.08),
+            ),
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
+class _FeaturedSoundCard extends StatelessWidget {
+  const _FeaturedSoundCard({
+    required this.sound,
+    required this.onTap,
+  });
+
+  final SoundModel sound;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final cardWidth = size.width * 0.55;
+
+    return SizedBox(
+      width: cardWidth,
+      child: _GlassContainer(
+        padding: const EdgeInsets.all(16),
+        borderRadius: 24,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Stack(
+                  children: [
+                    Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Color(0xFF1D2633),
+                            Color(0xFF0D1118),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: GestureDetector(
+                          onTap: onTap,
+                          child: const Icon(
+                            Icons.play_circle_fill,
+                            color: Colors.white,
+                            size: 40,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              sound.title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Calming and steady beats',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.white70,
+                  ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
