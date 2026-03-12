@@ -117,9 +117,8 @@ class _MixerHeader extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
           ),
-          _GlassCircleIconButton(
-            icon: Icons.share,
-            onTap: () {},
+          const SizedBox(
+            width: 40,
           ),
         ],
       ),
@@ -403,11 +402,6 @@ class _MixerBottomArea extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.skip_previous),
-                    color: Colors.white70,
                   ),
                   Container(
                     width: 48,

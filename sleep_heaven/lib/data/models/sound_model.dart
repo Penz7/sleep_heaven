@@ -5,6 +5,7 @@ class SoundModel {
     required this.title,
     required this.categoryId,
     required this.assetPath,
+    required this.imagePath,
     this.isPremium = false,
     this.icon = 'default',
   });
@@ -13,6 +14,7 @@ class SoundModel {
   final String title;
   final String categoryId;
   final String assetPath;
+  final String imagePath;
   final bool isPremium;
   final String icon;
 
@@ -21,6 +23,7 @@ class SoundModel {
     String? title,
     String? categoryId,
     String? assetPath,
+    String? imagePath,
     bool? isPremium,
     String? icon,
   }) {
@@ -29,6 +32,7 @@ class SoundModel {
       title: title ?? this.title,
       categoryId: categoryId ?? this.categoryId,
       assetPath: assetPath ?? this.assetPath,
+      imagePath: imagePath ?? this.imagePath,
       isPremium: isPremium ?? this.isPremium,
       icon: icon ?? this.icon,
     );
@@ -39,6 +43,7 @@ class SoundModel {
         'title': title,
         'categoryId': categoryId,
         'assetPath': assetPath,
+        'imagePath': imagePath,
         'isPremium': isPremium,
         'icon': icon,
       };
@@ -48,6 +53,7 @@ class SoundModel {
         title: json['title'] as String,
         categoryId: json['categoryId'] as String,
         assetPath: json['assetPath'] as String,
+        imagePath: json['imagePath'] as String,
         isPremium: json['isPremium'] as bool? ?? false,
         icon: json['icon'] as String? ?? 'default',
       );

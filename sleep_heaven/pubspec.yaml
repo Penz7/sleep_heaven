@@ -61,6 +61,10 @@ flutter:
     - assets/sounds/nature/
     - assets/icons/
     - assets/images/
+    - assets/images/rain/
+    - assets/images/white_noise/
+    - assets/images/baby/
+    - assets/images/nature/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

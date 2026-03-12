@@ -10,13 +10,15 @@ class LocalSoundProvider {
         title: 'Light Rain',
         categoryId: 'rain',
         assetPath: 'assets/sounds/rain/rain_light.ogg',
+        imagePath: 'assets/images/rain/rain_light.png',
         isPremium: false,
-      ),
+      ),  
       const SoundModel(
         id: 'rain_heavy',
         title: 'Heavy Rain',
         categoryId: 'rain',
         assetPath: 'assets/sounds/rain/rain_heavy.ogg',
+        imagePath: 'assets/images/rain/rain_heavy.png',
         isPremium: false,
       ),
       const SoundModel(
@@ -25,6 +27,7 @@ class LocalSoundProvider {
         categoryId: 'rain',
         assetPath: 'assets/sounds/rain/rain_window.ogg',
         isPremium: false,
+        imagePath: 'assets/images/rain/rain_window.png',
       ),
       const SoundModel(
         id: 'thunderstorm',
@@ -32,6 +35,7 @@ class LocalSoundProvider {
         categoryId: 'rain',
         assetPath: 'assets/sounds/rain/thunderstorm.ogg',
         isPremium: true,
+        imagePath: 'assets/images/rain/thunderstorm.png',
       ),
       const SoundModel(
         id: 'rain_forest',
@@ -39,6 +43,7 @@ class LocalSoundProvider {
         categoryId: 'rain',
         assetPath: 'assets/sounds/rain/rain_forest.ogg',
         isPremium: false,
+        imagePath: 'assets/images/rain/rain_forest.png',
       ),
       // White Noise - 3 free, 2 premium
       const SoundModel(
@@ -47,6 +52,7 @@ class LocalSoundProvider {
         categoryId: 'white_noise',
         assetPath: 'assets/sounds/white_noise/white_noise.ogg',
         isPremium: false,
+        imagePath: 'assets/images/white_noise/white_noise.png',
       ),
       const SoundModel(
         id: 'brown_noise',
@@ -54,6 +60,7 @@ class LocalSoundProvider {
         categoryId: 'white_noise',
         assetPath: 'assets/sounds/white_noise/brown_noise.ogg',
         isPremium: false,
+        imagePath: 'assets/images/white_noise/brown_noise.png',
       ),
       const SoundModel(
         id: 'fan',
@@ -61,6 +68,7 @@ class LocalSoundProvider {
         categoryId: 'white_noise',
         assetPath: 'assets/sounds/white_noise/fan.ogg',
         isPremium: false,
+        imagePath: 'assets/images/white_noise/fan.png',
       ),
       const SoundModel(
         id: 'pink_noise',
@@ -68,6 +76,7 @@ class LocalSoundProvider {
         categoryId: 'white_noise',
         assetPath: 'assets/sounds/white_noise/pink_noise.ogg',
         isPremium: true,
+        imagePath: 'assets/images/white_noise/pink_noise.png',
       ),
       const SoundModel(
         id: 'air_conditioner',
@@ -75,6 +84,7 @@ class LocalSoundProvider {
         categoryId: 'white_noise',
         assetPath: 'assets/sounds/white_noise/air_conditioner.ogg',
         isPremium: true,
+        imagePath: 'assets/images/white_noise/air_conditioner.png',
       ),
       // Baby - 3 free, 2 premium
       const SoundModel(
@@ -83,6 +93,7 @@ class LocalSoundProvider {
         categoryId: 'baby',
         assetPath: 'assets/sounds/baby/heartbeat.ogg',
         isPremium: false,
+        imagePath: 'assets/images/baby/baby.png',
       ),
       const SoundModel(
         id: 'shushing',
@@ -90,6 +101,7 @@ class LocalSoundProvider {
         categoryId: 'baby',
         assetPath: 'assets/sounds/baby/shushing.ogg',
         isPremium: false,
+        imagePath: 'assets/images/baby/baby.png',
       ),
       const SoundModel(
         id: 'lullaby_piano',
@@ -97,6 +109,7 @@ class LocalSoundProvider {
         categoryId: 'baby',
         assetPath: 'assets/sounds/baby/lullaby_piano.ogg',
         isPremium: false,
+        imagePath: 'assets/images/baby/baby.png',
       ),
       const SoundModel(
         id: 'hair_dryer',
@@ -104,6 +117,7 @@ class LocalSoundProvider {
         categoryId: 'baby',
         assetPath: 'assets/sounds/baby/hair_dryer.ogg',
         isPremium: true,
+        imagePath: 'assets/images/baby/baby.png',
       ),
       // Nature - 3 free, 2 premium
       const SoundModel(
@@ -112,6 +126,7 @@ class LocalSoundProvider {
         categoryId: 'nature',
         assetPath: 'assets/sounds/nature/ocean_waves.ogg',
         isPremium: false,
+        imagePath: 'assets/images/nature/ocean_waves.png',
       ),
       const SoundModel(
         id: 'forest_birds',
@@ -119,6 +134,7 @@ class LocalSoundProvider {
         categoryId: 'nature',
         assetPath: 'assets/sounds/nature/forest_birds.ogg',
         isPremium: false,
+        imagePath: 'assets/images/nature/forest_birds.png',
       ),
       const SoundModel(
         id: 'river_stream',
@@ -126,6 +142,7 @@ class LocalSoundProvider {
         categoryId: 'nature',
         assetPath: 'assets/sounds/nature/river_stream.ogg',
         isPremium: false,
+        imagePath: 'assets/images/nature/river_stream.png',
       ),
       const SoundModel(
         id: 'wind_gentle',
@@ -133,6 +150,7 @@ class LocalSoundProvider {
         categoryId: 'nature',
         assetPath: 'assets/sounds/nature/wind_gentle.ogg',
         isPremium: true,
+        imagePath: 'assets/images/nature/wind_gentle.png',
       ),
       const SoundModel(
         id: 'fireplace',
@@ -140,6 +158,7 @@ class LocalSoundProvider {
         categoryId: 'nature',
         assetPath: 'assets/sounds/nature/fireplace.ogg',
         isPremium: true,
+        imagePath: 'assets/images/nature/fireplace.png',
       ),
     ];
   }

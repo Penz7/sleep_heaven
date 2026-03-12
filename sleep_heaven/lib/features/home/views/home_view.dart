@@ -22,10 +22,7 @@ class HomeView extends GetView<HomeController> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              AppColors.backgroundDark,
-              AppColors.cardDark,
-            ],
+            colors: [AppColors.backgroundDark, AppColors.cardDark],
           ),
         ),
         child: Stack(
@@ -68,7 +65,6 @@ class HomeView extends GetView<HomeController> {
       ),
     );
   }
-
 }
 
 class _AmbientBackground extends StatelessWidget {
@@ -140,18 +136,20 @@ class _HomeHeader extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _GlassIconButton(
-          icon: Icons.menu,
+          icon: Icons.library_music,
           onTap: () => Get.toNamed(Routes.library),
+          backgroundColor: AppColors.accent.withOpacity(0.2),
+          iconColor: AppColors.accent,
         ),
         Text(
           AppStrings.appName,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: AppColors.accent,
-                fontWeight: FontWeight.bold,
-              ),
+            color: AppColors.accent,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         _GlassIconButton(
-          icon: Icons.person,
+          icon: Icons.tune_sharp,
           onTap: () => Get.toNamed(Routes.mixer),
           backgroundColor: AppColors.accent.withOpacity(0.2),
           iconColor: AppColors.accent,
@@ -170,16 +168,16 @@ class _WelcomeSection extends StatelessWidget {
         Text(
           'Good Night',
           style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
         const SizedBox(height: 4),
         Text(
           'Ready for a peaceful sleep?',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.white70,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: Colors.white70),
         ),
       ],
     );
@@ -187,10 +185,7 @@ class _WelcomeSection extends StatelessWidget {
 }
 
 class _FeaturedSection extends StatelessWidget {
-  const _FeaturedSection({
-    required this.size,
-    required this.controller,
-  });
+  const _FeaturedSection({required this.size, required this.controller});
 
   final Size size;
   final HomeController controller;
@@ -205,9 +200,9 @@ class _FeaturedSection extends StatelessWidget {
           children: [
             Text(
               'Featured Sounds',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
             TextButton(
               onPressed: () => Get.toNamed(Routes.library),
@@ -235,13 +230,12 @@ class _FeaturedSection extends StatelessWidget {
               return ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: sounds.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 16),
+                separatorBuilder: (_, _) => const SizedBox(width: 16),
                 itemBuilder: (context, index) {
                   final sound = sounds[index];
                   return _FeaturedSoundCard(
                     sound: sound,
-                    onTap: () =>
-                        Get.toNamed(Routes.player, arguments: sound),
+                    onTap: () => Get.toNamed(Routes.player, arguments: sound),
                   );
                 },
               );
@@ -265,9 +259,9 @@ class _CategoriesSection extends StatelessWidget {
       children: [
         Text(
           'Categories',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 16),
         GetBuilder<HomeController>(
@@ -280,8 +274,7 @@ class _CategoriesSection extends StatelessWidget {
             return GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              gridDelegate:
-                  const SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
@@ -290,9 +283,12 @@ class _CategoriesSection extends StatelessWidget {
               itemCount: categories.length,
               itemBuilder: (context, index) {
                 final category = categories[index];
-                return _GlassContainer(
-                  borderRadius: 20,
-                  child: Row(
+                return GestureDetector(
+                  onTap: () =>
+                      Get.toNamed(Routes.library, arguments: category.id),
+                  child: _GlassContainer(
+                    borderRadius: 20,
+                    child: Row(
                     children: [
                       Container(
                         width: 32,
@@ -311,15 +307,14 @@ class _CategoriesSection extends StatelessWidget {
                       Expanded(
                         child: Text(
                           category.name,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
+                          style: Theme.of(context).textTheme.bodyMedium
                               ?.copyWith(fontWeight: FontWeight.w500),
                         ),
                       ),
                     ],
                   ),
-                );
+                ),
+              );
               },
             );
           },
@@ -331,13 +326,13 @@ class _CategoriesSection extends StatelessWidget {
   IconData _iconForCategory(String categoryId) {
     switch (categoryId) {
       case 'rain':
-        return Icons.water_drop;
+        return Icons.cloudy_snowing;
       case 'white_noise':
         return Icons.graphic_eq;
       case 'baby':
         return Icons.child_care;
       case 'nature':
-        return Icons.nature;
+        return Icons.forest;
       default:
         return Icons.music_note;
     }
@@ -364,13 +359,8 @@ class _GlassIconButton extends StatelessWidget {
       child: _GlassContainer(
         padding: const EdgeInsets.all(10),
         borderRadius: 20,
-        backgroundColor:
-            backgroundColor ?? Colors.white.withOpacity(0.06),
-        child: Icon(
-          icon,
-          size: 20,
-          color: iconColor ?? Colors.white,
-        ),
+        backgroundColor: backgroundColor ?? Colors.white.withOpacity(0.06),
+        child: Icon(icon, size: 20, color: iconColor ?? Colors.white),
       ),
     );
   }
@@ -400,9 +390,7 @@ class _GlassContainer extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(borderRadius),
             color: backgroundColor ?? Colors.white.withOpacity(0.06),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.08),
-            ),
+            border: Border.all(color: Colors.white.withOpacity(0.08)),
           ),
           child: child,
         ),
@@ -412,10 +400,7 @@ class _GlassContainer extends StatelessWidget {
 }
 
 class _FeaturedSoundCard extends StatelessWidget {
-  const _FeaturedSoundCard({
-    required this.sound,
-    required this.onTap,
-  });
+  const _FeaturedSoundCard({required this.sound, required this.onTap});
 
   final SoundModel sound;
   final VoidCallback onTap;
@@ -438,16 +423,10 @@ class _FeaturedSoundCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 child: Stack(
                   children: [
-                    Container(
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Color(0xFF1D2633),
-                            Color(0xFF0D1118),
-                          ],
-                        ),
+                    Positioned.fill(
+                      child: Image.asset(
+                        sound.imagePath,
+                        fit: BoxFit.cover,
                       ),
                     ),
                     Align(
@@ -474,18 +453,18 @@ class _FeaturedSoundCard extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
               'Calming and steady beats',
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.white70,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Colors.white70),
             ),
           ],
         ),

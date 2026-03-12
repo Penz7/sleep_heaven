@@ -10,6 +10,23 @@ class LibraryController extends GetxController {
 
   List<CategoryModel> get categories => CategoryModel.all;
 
+  @override
+  void onInit() {
+    super.onInit();
+    final args = Get.arguments;
+    if (args is String) {
+      _focusCategoryById(args);
+    }
+  }
+
+  /// Focus tab by category id (from home navigation)
+  void _focusCategoryById(String categoryId) {
+    final index = categories.indexWhere((c) => c.id == categoryId);
+    if (index >= 0) {
+      selectTab(index + 1); // +1 because index 0 is "All"
+    }
+  }
+
   List<SoundModel> get sounds {
     if (selectedTabIndex == 0) {
       return _repository.getAllSounds();
