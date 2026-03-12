@@ -1,0 +1,92 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ/Android Studio/VS Code
+*.iml
+*.ipr
+*.iws
+.idea/
+.vscode/settings.json
+# Giữ lại launch/tasks nếu team dùng chung
+#!.vscode/launch.json
+#!.vscode/tasks.json
+
+# Flutter/Dart/Pub
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+# Generated API docs
+**/doc/api/
+
+# Build outputs
+/build/
+ios/Flutter/.last_build_id
+/coverage/
+
+# Android
+/android/app/debug
+/android/app/profile
+/android/app/release
+/android/key.properties
+/android/local.properties
+/android/.gradle/
+*.keystore
+*.jks
+.externalNativeBuild/
+
+# iOS (Quan trọng!)
+ios/.generated/
+ios/Flutter/App.framework
+ios/Flutter/Flutter.framework
+ios/Flutter/Generated.xcconfig
+ios/Flutter/ephemeral
+ios/Flutter/app.flx
+ios/Pods/
+ios/Podfile.lock
+ios/Runner.xcworkspace/xcuserdata/
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.pbxuser
+!default.pbxuser
+!default.mode1v3
+!default.mode2v3
+!default.perspectivev3
+DerivedData/
+xcuserdata/
+
+# FVM (Bạn đã có nhưng confirm)
+.fvm/
+
+# Firebase/Secrets (Quan trọng cho IAP)
+#google-services.json
+#GoogleService-Info.plist
+.env
+*.env.*
+!.env.example
+
+# macOS/Linux
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Web builds
+/web/build/
+
+# Testing
+*.test.dart
