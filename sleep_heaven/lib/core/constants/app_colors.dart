@@ -25,3 +25,7 @@ class AppColors {
   static const Color favorite = Color(0xFFE74C3C);
   static const Color premium = Color(0xFFFFD700);
 }
+
+extension ColorOpacity on Color {
+  Color opacityColor(double opacity) => withValues(alpha: opacity);
+}

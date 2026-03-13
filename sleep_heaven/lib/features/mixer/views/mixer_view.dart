@@ -31,7 +31,7 @@ class MixerView extends GetView<MixerController> {
                 children: [
                   const _MixerHeader(),
                   const Expanded(
-                    child: _ActiveSoundsList(),
+                    child: ActiveSoundsList(),
                   ),
                   SizedBox(height: size.height * 0.18),
                 ],
@@ -126,8 +126,8 @@ class _MixerHeader extends StatelessWidget {
   }
 }
 
-class _ActiveSoundsList extends GetView<MixerController> {
-  const _ActiveSoundsList({Key? key}) : super(key: key);
+class ActiveSoundsList extends GetView<MixerController> {
+  const ActiveSoundsList({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -227,7 +227,7 @@ class _MixerTrackCard extends StatelessWidget {
                       width: 48,
                       height: 48,
                       decoration: BoxDecoration(
-                        color: AppColors.accent.withOpacity(0.18),
+                        color: AppColors.accent.opacityColor(0.18),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Icon(
@@ -485,10 +485,10 @@ class _GlassCircleIconButton extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.06),
+              color: Colors.white.opacityColor(0.06),
               borderRadius: BorderRadius.circular(999),
               border: Border.all(
-                color: Colors.white.withOpacity(0.12),
+                color: Colors.white.opacityColor(0.12),
               ),
             ),
             child: Icon(
@@ -524,9 +524,9 @@ class _GlassContainer extends StatelessWidget {
           padding: padding ?? const EdgeInsets.all(12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(borderRadius),
-            color: Colors.white.withOpacity(0.05),
+            color: Colors.white.opacityColor(0.05),
             border: Border.all(
-              color: Colors.white.withOpacity(0.12),
+              color: Colors.white.opacityColor(0.12),
             ),
           ),
           child: child,

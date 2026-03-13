@@ -38,8 +38,8 @@ class PremiumView extends GetView<PremiumController> {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        AppColors.primaryStart.withOpacity(0.3),
-                        AppColors.primaryEnd.withOpacity(0.3),
+                        AppColors.primaryStart.opacityColor(0.3),
+                        AppColors.primaryEnd.opacityColor(0.3),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,

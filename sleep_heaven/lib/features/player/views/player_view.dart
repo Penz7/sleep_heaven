@@ -62,8 +62,8 @@ class PlayerView extends GetView<PlayerController> {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            AppColors.primaryStart.withOpacity(0.5),
-                            AppColors.primaryEnd.withOpacity(0.5),
+                            AppColors.primaryStart.opacityColor(0.5),
+                            AppColors.primaryEnd.opacityColor(0.5),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
@@ -116,7 +116,7 @@ class PlayerView extends GetView<PlayerController> {
                               label: Text(m == 0 ? 'Off' : '${m}m'),
                               selected: isSelected,
                               onSelected: (_) => ctrl.setTimer(m),
-                              selectedColor: AppColors.primaryStart.withOpacity(0.5),
+                              selectedColor: AppColors.primaryStart.opacityColor(0.5),
                             ),
                           );
                         }).toList(),

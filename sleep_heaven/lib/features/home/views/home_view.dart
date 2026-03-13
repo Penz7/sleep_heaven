@@ -89,7 +89,7 @@ class _AmbientBackground extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    AppColors.accent.withOpacity(0.25),
+                    AppColors.accent.opacityColor(0.25),
                     Colors.transparent,
                   ],
                 ),
@@ -102,25 +102,27 @@ class _AmbientBackground extends StatelessWidget {
             child: Icon(
               Icons.dark_mode,
               size: 96,
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.opacityColor(0.4),
             ),
           ),
-          Positioned(
-            top: size.height * 0.2,
-            left: size.width * 0.2,
-            child: Icon(
-              Icons.star,
-              size: 16,
-              color: Colors.white.withOpacity(0.15),
-            ),
-          ),
-          Positioned(
-            top: size.height * 0.16,
-            right: size.width * 0.3,
-            child: Icon(
-              Icons.star,
-              size: 12,
-              color: Colors.white.withOpacity(0.08),
+          Positioned.fill(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.backgroundDark.opacityColor(0.01),
+                        AppColors.cardDark.opacityColor(0.01),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
         ],
@@ -138,7 +140,7 @@ class _HomeHeader extends StatelessWidget {
         _GlassIconButton(
           icon: Icons.library_music,
           onTap: () => Get.toNamed(Routes.library),
-          backgroundColor: AppColors.accent.withOpacity(0.2),
+          backgroundColor: AppColors.accent.opacityColor(0.2),
           iconColor: AppColors.accent,
         ),
         Text(
@@ -151,7 +153,7 @@ class _HomeHeader extends StatelessWidget {
         _GlassIconButton(
           icon: Icons.tune_sharp,
           onTap: () => Get.toNamed(Routes.mixer),
-          backgroundColor: AppColors.accent.withOpacity(0.2),
+          backgroundColor: AppColors.accent.opacityColor(0.2),
           iconColor: AppColors.accent,
         ),
       ],
@@ -289,32 +291,32 @@ class _CategoriesSection extends StatelessWidget {
                   child: _GlassContainer(
                     borderRadius: 20,
                     child: Row(
-                    children: [
-                      Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: AppColors.accent.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(16),
+                      children: [
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: AppColors.accent.opacityColor(0.15),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Icon(
+                            _iconForCategory(category.id),
+                            color: AppColors.accent,
+                            size: 18,
+                          ),
                         ),
-                        child: Icon(
-                          _iconForCategory(category.id),
-                          color: AppColors.accent,
-                          size: 18,
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            category.name,
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(fontWeight: FontWeight.w500),
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          category.name,
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              );
+                );
               },
             );
           },
@@ -359,7 +361,7 @@ class _GlassIconButton extends StatelessWidget {
       child: _GlassContainer(
         padding: const EdgeInsets.all(10),
         borderRadius: 20,
-        backgroundColor: backgroundColor ?? Colors.white.withOpacity(0.06),
+        backgroundColor: backgroundColor ?? Colors.white.opacityColor(0.06),
         child: Icon(icon, size: 20, color: iconColor ?? Colors.white),
       ),
     );
@@ -389,8 +391,8 @@ class _GlassContainer extends StatelessWidget {
           padding: padding ?? const EdgeInsets.all(12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(borderRadius),
-            color: backgroundColor ?? Colors.white.withOpacity(0.06),
-            border: Border.all(color: Colors.white.withOpacity(0.08)),
+            color: backgroundColor ?? Colors.white.opacityColor(0.06),
+            border: Border.all(color: Colors.white.opacityColor(0.08)),
           ),
           child: child,
         ),
@@ -424,10 +426,7 @@ class _FeaturedSoundCard extends StatelessWidget {
                 child: Stack(
                   children: [
                     Positioned.fill(
-                      child: Image.asset(
-                        sound.imagePath,
-                        fit: BoxFit.cover,
-                      ),
+                      child: Image.asset(sound.imagePath, fit: BoxFit.cover),
                     ),
                     Align(
                       alignment: Alignment.bottomLeft,

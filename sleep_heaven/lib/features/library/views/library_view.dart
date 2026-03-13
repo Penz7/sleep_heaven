@@ -87,7 +87,7 @@ class LibraryView extends GetView<LibraryController> {
         label: Text(label),
         selected: isSelected,
         onSelected: (_) => c.selectTab(index),
-        selectedColor: AppColors.primaryStart.withOpacity(0.5),
+        selectedColor: AppColors.primaryStart.opacityColor(0.5),
       ),
     );
   }
