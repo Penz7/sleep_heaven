@@ -75,12 +75,16 @@ class MixerView extends GetView<MixerController> {
                 itemBuilder: (context, index) {
                   final sound = sounds[index];
                   final alreadyAdded = controller.tracks.containsKey(sound.id);
+                  final isLocked =
+                      sound.isPremium && !repo.isPremium && !alreadyAdded;
                   return ListTile(
                     title: Text(sound.title),
                     trailing: alreadyAdded
                         ? const Icon(Icons.check)
                         : IconButton(
-                            icon: const Icon(Icons.add),
+                            icon: Icon(
+                              isLocked ? Icons.lock : Icons.add,
+                            ),
                             onPressed: () {
                               Get.back();
                               controller.addTrack(sound);
@@ -105,20 +109,33 @@ class _MixerHeader extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _GlassCircleIconButton(
-            icon: Icons.close,
-            onTap: () => Get.back(),
+          InkWell(
+            borderRadius: BorderRadius.circular(999),
+            onTap: () {
+              Get.back();
+            },
+            child: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: AppColors.accent.opacityColor(0.15),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.arrow_back_ios_rounded,
+                size: 20,
+                color: AppColors.accent,
+              ),
+            ),
           ),
+          const SizedBox(width: 24),
           Text(
             AppStrings.mixer,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          const SizedBox(
-            width: 40,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
           ),
         ],
       ),
@@ -176,7 +193,8 @@ class ActiveSoundsList extends GetView<MixerController> {
             ),
             const SizedBox(height: 12),
             ...controller.tracks.entries.map(
-              (entry) => _MixerTrackCard(
+              (entry) => _AnimatedMixerTrackCard(
+                key: ValueKey(entry.key),
                 soundId: entry.key,
                 track: entry.value,
                 onRemove: () => controller.removeTrack(entry.key),
@@ -333,6 +351,76 @@ class _MixerTrackCard extends StatelessWidget {
   }
 }
 
+class _AnimatedMixerTrackCard extends StatefulWidget {
+  const _AnimatedMixerTrackCard({
+    super.key,
+    required this.soundId,
+    required this.track,
+    required this.onRemove,
+    required this.onVolumeChanged,
+  });
+
+  final String soundId;
+  final dynamic track;
+  final VoidCallback onRemove;
+  final ValueChanged<double> onVolumeChanged;
+
+  @override
+  State<_AnimatedMixerTrackCard> createState() =>
+      _AnimatedMixerTrackCardState();
+}
+
+class _AnimatedMixerTrackCardState extends State<_AnimatedMixerTrackCard>
+    with SingleTickerProviderStateMixin {
+  double _opacity = 0.0;
+  Offset _offset = const Offset(0, 0.08);
+
+  @override
+  void initState() {
+    super.initState();
+    // Fade in from bottom when item được thêm
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {
+          _opacity = 1.0;
+          _offset = Offset.zero;
+        });
+      }
+    });
+  }
+
+  void _handleRemove() {
+    setState(() {
+      _opacity = 0.0;
+      _offset = const Offset(0, 0.08);
+    });
+    Future.delayed(const Duration(milliseconds: 200), () {
+      if (mounted) {
+        widget.onRemove();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSlide(
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeOutCubic,
+      offset: _offset,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 200),
+        opacity: _opacity,
+        child: _MixerTrackCard(
+          soundId: widget.soundId,
+          track: widget.track,
+          onRemove: _handleRemove,
+          onVolumeChanged: widget.onVolumeChanged,
+        ),
+      ),
+    );
+  }
+}
+
 class _MixerBottomArea extends StatelessWidget {
   const _MixerBottomArea({
     required this.controller,
@@ -459,45 +547,6 @@ class _MixerBottomArea extends StatelessWidget {
                 : const SizedBox.shrink(),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _GlassCircleIconButton extends StatelessWidget {
-  const _GlassCircleIconButton({
-    required this.icon,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(999),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-          child: Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: Colors.white.opacityColor(0.06),
-              borderRadius: BorderRadius.circular(999),
-              border: Border.all(
-                color: Colors.white.opacityColor(0.12),
-              ),
-            ),
-            child: Icon(
-              icon,
-              size: 20,
-              color: Colors.white,
-            ),
-          ),
-        ),
       ),
     );
   }

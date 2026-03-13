@@ -7,8 +7,11 @@ class SleepAudioHandler extends BaseAudioHandler {
   void Function()? onPlayRequested;
   void Function()? onPauseRequested;
 
+  String? _originalArtist;
+
   /// Cập nhật metadata hiển thị trên notification/lock screen
   void setNowPlaying({required String id, required String title, required String artist}) {
+    _originalArtist = artist;
     mediaItem.add(MediaItem(id: id, title: title, artist: artist));
   }
 
@@ -23,6 +26,29 @@ class SleepAudioHandler extends BaseAudioHandler {
       processingState: AudioProcessingState.ready,
       playing: playing,
     ));
+  }
+
+  /// Cập nhật notification hiển thị thời gian còn lại (gọi mỗi giây khi timer chạy)
+  void updateTimerNotification(Duration remaining) {
+    final current = mediaItem.value;
+    if (current == null) return;
+    // Dùng artist field - hiển thị đáng tin cậy trên cả Android notification và iOS lock screen
+    mediaItem.add(current.copyWith(
+      artist: '⏱ ${_formatRemaining(remaining)} remaining',
+    ));
+  }
+
+  /// Xóa timer khỏi notification (khi Off hoặc timer kết thúc)
+  void clearTimerNotification() {
+    final current = mediaItem.value;
+    if (current == null) return;
+    mediaItem.add(current.copyWith(artist: _originalArtist ?? 'Sleep Heaven'));
+  }
+
+  String _formatRemaining(Duration d) {
+    final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return d.inHours > 0 ? '${d.inHours}:$m:$s' : '$m:$s';
   }
 
   @override

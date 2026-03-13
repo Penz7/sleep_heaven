@@ -140,7 +140,7 @@ class _HomeHeader extends StatelessWidget {
         _GlassIconButton(
           icon: Icons.library_music,
           onTap: () => Get.toNamed(Routes.library),
-          backgroundColor: AppColors.accent.opacityColor(0.2),
+          backgroundColor: AppColors.accent.opacityColor(0.15),
           iconColor: AppColors.accent,
         ),
         Text(
@@ -153,7 +153,7 @@ class _HomeHeader extends StatelessWidget {
         _GlassIconButton(
           icon: Icons.tune_sharp,
           onTap: () => Get.toNamed(Routes.mixer),
-          backgroundColor: AppColors.accent.opacityColor(0.2),
+          backgroundColor: AppColors.accent.opacityColor(0.15),
           iconColor: AppColors.accent,
         ),
       ],
@@ -356,7 +356,7 @@ class _GlassIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: onTap,
       child: _GlassContainer(
         padding: const EdgeInsets.all(10),
