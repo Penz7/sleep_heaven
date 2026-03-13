@@ -4,6 +4,7 @@ import 'package:audio_session/audio_session.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 
+import '../../../core/services/audio_handler.dart';
 import '../../../core/utils/audio_helpers.dart';
 import '../../../data/models/sound_model.dart';
 import '../../../data/repositories/sound_repository.dart';
@@ -11,6 +12,7 @@ import '../../../routes/app_routes.dart';
 
 class PlayerController extends GetxController {
   final SoundRepository _repository = Get.find<SoundRepository>();
+  late final SleepAudioHandler _handler;
 
   final AudioPlayer _player = AudioPlayer();
 
@@ -28,6 +30,7 @@ class PlayerController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _handler = Get.find<SleepAudioHandler>();
     _initAudioSession();
     _listenToPlayer();
     final args = Get.arguments;
@@ -46,7 +49,11 @@ class PlayerController extends GetxController {
   }
 
   void _listenToPlayer() {
-    _player.playingStream.listen((playing) => isPlaying.value = playing);
+    _player.playingStream.listen((playing) {
+      isPlaying.value = playing;
+      // Đồng bộ trạng thái notification theo playing state thực tế của player
+      _handler.setPlaybackState(playing: playing);
+    });
     _player.volumeStream.listen((v) => volume.value = v);
   }
 
@@ -60,6 +67,12 @@ class PlayerController extends GetxController {
     try {
       await _player.setAsset(sound.assetPath);
       await _player.setLoopMode(LoopMode.one);
+      // Cập nhật metadata notification khi load sound mới
+      _handler.setNowPlaying(
+        id: sound.id,
+        title: sound.title,
+        artist: 'Sleep Heaven',
+      );
     } catch (e) {
       Get.snackbar('Error', 'Could not load sound: $e');
     }
@@ -67,6 +80,9 @@ class PlayerController extends GetxController {
 
   Future<void> play() async {
     if (currentSound.value == null) return;
+    // Đăng ký controller này làm chủ notification khi bắt đầu phát
+    _handler.onPlayRequested = play;
+    _handler.onPauseRequested = pause;
     await _player.play();
     _startTimerIfSet();
   }

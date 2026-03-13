@@ -1,10 +1,13 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'core/bindings/app_binding.dart';
+import 'core/constants/app_colors.dart';
 import 'core/constants/app_strings.dart';
+import 'core/services/audio_handler.dart';
 import 'core/themes/app_theme.dart';
 import 'data/providers/hive_provider.dart';
 import 'routes/app_pages.dart';
@@ -12,6 +15,17 @@ import 'routes/app_routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final handler = await AudioService.init(
+    builder: () => SleepAudioHandler(),
+    config: const AudioServiceConfig(
+      androidNotificationChannelId: 'com.sleepheaven.audio',
+      androidNotificationChannelName: 'Sleep Heaven',
+      androidNotificationOngoing: true,
+      androidStopForegroundOnPause: true,
+      notificationColor: AppColors.backgroundDark,
+    ),
+  );
+  Get.put<SleepAudioHandler>(handler, permanent: true);
 
   // Khởi tạo Hive trước khi chạy app
   final hiveProvider = HiveProvider();

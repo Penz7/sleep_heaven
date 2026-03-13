@@ -4,12 +4,14 @@ import 'package:audio_session/audio_session.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 
+import '../../../core/services/audio_handler.dart';
 import '../../../data/models/sound_model.dart';
 import '../../../data/repositories/sound_repository.dart';
 import '../../../routes/app_routes.dart';
 
 class MixerController extends GetxController {
   final SoundRepository _repository = Get.find<SoundRepository>();
+  late final SleepAudioHandler _handler;
 
   static const int maxTracks = 3;
 
@@ -23,8 +25,17 @@ class MixerController extends GetxController {
 
   bool get canAddTrack => tracks.length < maxTracks;
 
+  @override
+  void onInit() {
+    super.onInit();
+    _handler = Get.find<SleepAudioHandler>();
+  }
+
   void _updateIsPlaying() {
-    isPlayingRx.value = tracks.values.any((t) => t.player.playing);
+    final playing = tracks.values.any((t) => t.player.playing);
+    isPlayingRx.value = playing;
+    // Đồng bộ trạng thái notification khi bất kỳ track nào thay đổi
+    _handler.setPlaybackState(playing: playing);
   }
 
   Future<void> addTrack(SoundModel sound) async {
@@ -63,7 +74,7 @@ class MixerController extends GetxController {
     }
   }
 
-  void removeTrack(String soundId) {
+  Future<void> removeTrack(String soundId) async {
     _playingSubscriptions[soundId]?.cancel();
     _playingSubscriptions.remove(soundId);
 
@@ -91,6 +102,14 @@ class MixerController extends GetxController {
       avAudioSessionCategoryOptions: AVAudioSessionCategoryOptions.mixWithOthers,
       avAudioSessionMode: AVAudioSessionMode.spokenAudio,
     ));
+    // Đăng ký mixer làm chủ notification khi bắt đầu phát
+    _handler.onPlayRequested = playAll;
+    _handler.onPauseRequested = pauseAll;
+    _handler.setNowPlaying(
+      id: 'mixer',
+      title: 'Sleep Heaven - Mixer',
+      artist: 'Sleep Heaven',
+    );
     for (final track in tracks.values) {
       await track.player.setLoopMode(LoopMode.one);
       track.player.play(); // Không await - play() resolve khi playback kết thúc (loop = vô hạn)
