@@ -61,7 +61,6 @@ class PlayerController extends GetxController {
   }
 
   Future<void> loadSound(SoundModel sound) async {
-    debugPrint("======> sound path: ${sound.assetPath}");
     if (sound.isPremium && !_repository.isPremium) {
       Get.toNamed(Routes.premium);
       return;
