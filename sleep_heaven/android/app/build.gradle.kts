@@ -17,10 +17,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-
     defaultConfig {
         applicationId = "dat.c.sleepheaven"
         minSdk = flutter.minSdkVersion
@@ -31,7 +27,6 @@ android {
 
     signingConfigs {
         create("release") {
-            // Đọc từ android/key.properties – xem IAP_SETUP.md để tạo keystore
             val keystorePropertiesFile = rootProject.file("key.properties")
             if (keystorePropertiesFile.exists()) {
                 val props = Properties().apply {
