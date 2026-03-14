@@ -25,7 +25,7 @@ android {
         // TODO: Đổi thành application ID thật trước khi publish (xem IAP_SETUP.md)
         applicationId = "com.example.sleep_heaven"
         // in_app_purchase + flutter_secure_storage yêu cầu minSdk 21
-        minSdk = 21
+        minSdk = flutter.minSdkVersion
         // Google Play yêu cầu targetSdk >= 35 (kể từ 31/8/2025)
         targetSdk = 35
         versionCode = flutter.versionCode
