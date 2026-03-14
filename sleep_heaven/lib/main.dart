@@ -19,7 +19,7 @@ void main() async {
   final handler = await AudioService.init(
     builder: () => SleepAudioHandler(),
     config: const AudioServiceConfig(
-      androidNotificationChannelId: 'com.sleepheaven.audio',
+      androidNotificationChannelId: 'dat.c.sleepheaven.audio',
       androidNotificationChannelName: 'Sleep Heaven',
       androidNotificationOngoing: true,
       androidStopForegroundOnPause: true,

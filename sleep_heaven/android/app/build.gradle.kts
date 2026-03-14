@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -6,10 +8,8 @@ plugins {
 }
 
 android {
-    // TODO: Đổi thành package ID thật trước khi publish (xem IAP_SETUP.md)
-    namespace = "com.example.sleep_heaven"
-    // Explicit – Google Play yêu cầu compileSdk >= targetSdk
-    compileSdk = 35
+    namespace = "dat.c.sleepheaven"
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -18,16 +18,13 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
+        jvmTarget = "17"
     }
 
     defaultConfig {
-        // TODO: Đổi thành application ID thật trước khi publish (xem IAP_SETUP.md)
-        applicationId = "com.example.sleep_heaven"
-        // in_app_purchase + flutter_secure_storage yêu cầu minSdk 21
+        applicationId = "dat.c.sleepheaven"
         minSdk = flutter.minSdkVersion
-        // Google Play yêu cầu targetSdk >= 35 (kể từ 31/8/2025)
-        targetSdk = 35
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
@@ -37,7 +34,7 @@ android {
             // Đọc từ android/key.properties – xem IAP_SETUP.md để tạo keystore
             val keystorePropertiesFile = rootProject.file("key.properties")
             if (keystorePropertiesFile.exists()) {
-                val props = java.util.Properties().apply {
+                val props = Properties().apply {
                     load(keystorePropertiesFile.inputStream())
                 }
                 keyAlias      = props["keyAlias"] as String

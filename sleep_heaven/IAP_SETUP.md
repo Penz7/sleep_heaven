@@ -88,25 +88,25 @@ File `Runner.entitlements` đã được tạo sẵn trong code. Cần link tron
 
 ## Đổi App ID
 
-App ID hiện tại là `com.example.sleep_heaven` / `com.example.sleepHeaven` (placeholder). **Bắt buộc đổi trước khi publish.**
+**Đã áp dụng trong project:** App ID **`dat.c.sleepheaven`** (Android `namespace`/`applicationId`, iOS/macOS Bundle Identifier, Linux `APPLICATION_ID`, package `dat.c.sleepheaven`). Nếu cần đổi sang ID khác, làm ngược lại các bước dưới.
 
 ### Android
 
 1. **`android/app/build.gradle.kts`** – đổi 2 dòng:
    ```kotlin
-   namespace = "com.yourcompany.sleepheaven"
-   applicationId = "com.yourcompany.sleepheaven"
+   namespace = "dat.c.sleepheaven"
+   applicationId = "dat.c.sleepheaven"
    ```
 
-2. **Rename package folder:**
+2. **Rename package folder** (theo từng phần của package name):
    ```
    android/app/src/main/kotlin/com/example/sleep_heaven/
-   → android/app/src/main/kotlin/com/yourcompany/sleepheaven/
+   → android/app/src/main/kotlin/dat/c/sleepheaven/
    ```
 
 3. **`MainActivity.kt`** – đổi dòng đầu:
    ```kotlin
-   package com.yourcompany.sleepheaven
+   package dat.c.sleepheaven
    ```
 
 4. **`AndroidManifest.xml`** – thay test AdMob ID bằng ID thật:
@@ -119,7 +119,7 @@ App ID hiện tại là `com.example.sleep_heaven` / `com.example.sleepHeaven` (
 ### iOS
 
 1. Mở Xcode → **Runner target → General → Bundle Identifier**
-2. Đổi thành ID thật: `com.yourcompany.sleepheaven`
+2. Đổi thành ID thật, ví dụ: `dat.c.sleepheaven`
 3. **`ios/Runner/Info.plist`** – thay test AdMob ID bằng ID thật:
    ```xml
    <key>GADApplicationIdentifier</key>
