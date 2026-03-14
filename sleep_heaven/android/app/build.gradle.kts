@@ -17,6 +17,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17.toString()
+    }
+
     defaultConfig {
         applicationId = "dat.c.sleepheaven"
         minSdk = flutter.minSdkVersion

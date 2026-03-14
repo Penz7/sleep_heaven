@@ -109,13 +109,13 @@ class _AmbientBackground extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(24),
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
                 child: Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        AppColors.backgroundDark.opacityColor(0.01),
-                        AppColors.cardDark.opacityColor(0.01),
+                        AppColors.backgroundDark.opacityColor(0.18),
+                        AppColors.cardDark.opacityColor(0.18),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -221,27 +221,31 @@ class _FeaturedSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         SizedBox(
-          height: size.height * 0.38,
-          child: GetBuilder<HomeController>(
-            builder: (_) {
-              final sounds = controller.featuredSounds;
-              if (sounds.isEmpty) {
-                return const SizedBox.shrink();
-              }
+          height: size.height * 0.34,
+          child: RepaintBoundary(
+            child: GetBuilder<HomeController>(
+              builder: (_) {
+                final sounds = controller.featuredSounds;
+                if (sounds.isEmpty) {
+                  return const SizedBox.shrink();
+                }
 
-              return ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: sounds.length,
-                separatorBuilder: (_, _) => const SizedBox(width: 16),
-                itemBuilder: (context, index) {
-                  final sound = sounds[index];
-                  return _FeaturedSoundCard(
-                    sound: sound,
-                    onTap: () => Get.toNamed(Routes.player, arguments: sound),
-                  );
-                },
-              );
-            },
+                return ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  cacheExtent: size.width,
+                  itemCount: sounds.length,
+                  separatorBuilder: (_, _) => const SizedBox(width: 16),
+                  itemBuilder: (context, index) {
+                    final sound = sounds[index];
+                    return _FeaturedSoundCard(
+                      sound: sound,
+                      onTap: () => Get.toNamed(Routes.player, arguments: sound),
+                      width: size.width * 0.55,
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ),
       ],
@@ -374,98 +378,114 @@ class _GlassContainer extends StatelessWidget {
     this.padding,
     this.borderRadius = 24,
     this.backgroundColor,
+    this.useBlur = false,
   });
 
   final Widget child;
   final EdgeInsetsGeometry? padding;
   final double borderRadius;
   final Color? backgroundColor;
+   final bool useBlur;
 
   @override
   Widget build(BuildContext context) {
+    final content = Container(
+      padding: padding ?? const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(borderRadius),
+        color: backgroundColor ?? Colors.white.opacityColor(0.06),
+        border: Border.all(color: Colors.white.opacityColor(0.08)),
+      ),
+      child: child,
+    );
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-        child: Container(
-          padding: padding ?? const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(borderRadius),
-            color: backgroundColor ?? Colors.white.opacityColor(0.06),
-            border: Border.all(color: Colors.white.opacityColor(0.08)),
-          ),
-          child: child,
-        ),
-      ),
+      child: useBlur
+          ? BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+              child: content,
+            )
+          : content,
     );
   }
 }
 
 class _FeaturedSoundCard extends StatelessWidget {
-  const _FeaturedSoundCard({required this.sound, required this.onTap});
+  const _FeaturedSoundCard({
+    required this.sound,
+    required this.onTap,
+    required this.width,
+  });
 
   final SoundModel sound;
   final VoidCallback onTap;
+  final double width;
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final cardWidth = size.width * 0.55;
-
     return SizedBox(
-      width: cardWidth,
-      child: _GlassContainer(
-        padding: const EdgeInsets.all(16),
-        borderRadius: 24,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Stack(
-                  children: [
-                    Positioned.fill(
-                      child: Image.asset(sound.imagePath, fit: BoxFit.cover),
-                    ),
-                    Align(
-                      alignment: Alignment.bottomLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: GestureDetector(
-                          onTap: onTap,
-                          child: const Icon(
-                            Icons.play_circle_fill,
-                            color: Colors.white,
-                            size: 40,
+      width: width,
+      child: RepaintBoundary(
+        child: _GlassContainer(
+          padding: const EdgeInsets.all(16),
+          borderRadius: 24,
+          useBlur: false,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: Image.asset(
+                          sound.imagePath,
+                          fit: BoxFit.cover,
+                          filterQuality: FilterQuality.none,
+                          cacheWidth: 600,
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.bottomLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: GestureDetector(
+                            onTap: onTap,
+                            child: const Icon(
+                              Icons.play_circle_fill,
+                              color: Colors.white,
+                              size: 40,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              sound.title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
+              const SizedBox(height: 12),
+              Text(
+                sound.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Calming and steady beats',
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: Colors.white70),
-            ),
-          ],
+              const SizedBox(height: 4),
+              Text(
+                'Calming and steady beats',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: Colors.white70),
+              ),
+            ],
+          ),
         ),
       ),
     );

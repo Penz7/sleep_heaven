@@ -235,7 +235,7 @@ class _BubbleSoundCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(40),
             color: Colors.white.opacityColor(0.04),
           ),
           child: Column(
