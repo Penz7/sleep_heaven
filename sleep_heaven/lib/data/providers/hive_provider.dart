@@ -1,11 +1,11 @@
 import 'package:hive_flutter/hive_flutter.dart';
 
-/// Provider quản lý Hive - favorites, settings, premium status
+/// Provider quản lý Hive - favorites và settings
+/// Premium status đã được chuyển sang IAPService (flutter_secure_storage)
 class HiveProvider {
   static const String _favoritesBox = 'favorites';
   static const String _settingsBox = 'settings';
   static const String _favoritesKey = 'favorite_ids';
-  static const String _isPremiumKey = 'is_premium';
   static const String _hasSeenOnboardingKey = 'has_seen_onboarding';
 
   Box<dynamic>? _favoritesBoxInstance;
@@ -40,12 +40,6 @@ class HiveProvider {
   }
 
   bool isFavorite(String soundId) => favoriteIds.contains(soundId);
-
-  bool get isPremium => _settingsBoxInstance?.get(_isPremiumKey, defaultValue: false) as bool? ?? false;
-
-  set isPremium(bool value) {
-    _settingsBoxInstance?.put(_isPremiumKey, value);
-  }
 
   bool get hasSeenOnboarding =>
       _settingsBoxInstance?.get(_hasSeenOnboardingKey, defaultValue: false) as bool? ?? false;

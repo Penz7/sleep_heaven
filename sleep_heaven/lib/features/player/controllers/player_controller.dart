@@ -23,7 +23,7 @@ class PlayerController extends GetxController {
   final Rx<Duration> remainingTime = Duration.zero.obs;
 
   Timer? _timerCountdown;
-  DateTime? _timerEndTime;
+  Timer? _sleepTimer;
 
   AudioPlayer get player => _player;
 
@@ -50,13 +50,11 @@ class PlayerController extends GetxController {
 
   void _listenToPlayer() {
     _player.playingStream.listen((playing) {
-      final wasPlaying = isPlaying.value;
       isPlaying.value = playing;
+      // Đồng bộ trạng thái notification theo playing state thực tế của player
       _handler.setPlaybackState(playing: playing);
-      if (playing && !wasPlaying && timerMinutes.value > 0 && _timerEndTime == null) {
-        _resumeOrStartTimer();
-      }
     });
+    _player.volumeStream.listen((v) => volume.value = v);
   }
 
   Future<void> loadSound(SoundModel sound) async {
@@ -69,6 +67,7 @@ class PlayerController extends GetxController {
     try {
       await _player.setAsset(sound.assetPath);
       await _player.setLoopMode(LoopMode.one);
+      // Cập nhật metadata notification khi load sound mới
       _handler.setNowPlaying(
         id: sound.id,
         title: sound.title,
@@ -81,24 +80,22 @@ class PlayerController extends GetxController {
 
   Future<void> play() async {
     if (currentSound.value == null) return;
+    // Đăng ký controller này làm chủ notification khi bắt đầu phát
     _handler.onPlayRequested = play;
     _handler.onPauseRequested = pause;
     await _player.play();
+    _startTimerIfSet();
   }
 
   Future<void> pause() async {
     await _player.pause();
-    _syncRemainingFromEndTime();
-    _cancelTimerTicker();
-    _timerEndTime = null;
+    _cancelTimers();
   }
 
   Future<void> stop() async {
     await _player.stop();
-    _cancelTimerTicker();
-    _timerEndTime = null;
+    _cancelTimers();
     remainingTime.value = Duration.zero;
-    _handler.clearTimerNotification();
   }
 
   Future<void> setVolume(double v) async {
@@ -108,73 +105,50 @@ class PlayerController extends GetxController {
 
   void setTimer(int minutes) {
     timerMinutes.value = minutes;
-    if (minutes <= 0) {
-      _cancelTimerTicker();
-      _timerEndTime = null;
-      remainingTime.value = Duration.zero;
-      _handler.clearTimerNotification();
-      return;
-    }
-    remainingTime.value = Duration(minutes: minutes);
-    if (isPlaying.value) {
-      _startTimerFromRemaining();
+    if (minutes > 0 && isPlaying.value) {
+      _startTimerIfSet();
     }
   }
 
-  void _resumeOrStartTimer() {
+  void _startTimerIfSet() {
+    _cancelTimers();
     if (timerMinutes.value <= 0) return;
-    if (remainingTime.value <= Duration.zero) {
-      remainingTime.value = Duration(minutes: timerMinutes.value);
-    }
-    _startTimerFromRemaining();
-  }
-
-  void _startTimerFromRemaining() {
-    _cancelTimerTicker();
-    final remaining = remainingTime.value;
-    if (remaining <= Duration.zero) return;
-    _timerEndTime = DateTime.now().add(remaining);
+    var remaining = Duration(minutes: timerMinutes.value);
+    remainingTime.value = remaining;
     _timerCountdown = Timer.periodic(const Duration(seconds: 1), (_) {
-      _syncRemainingFromEndTime();
-      if (remainingTime.value <= Duration.zero) {
-        _cancelTimerTicker();
-        _timerEndTime = null;
+      remaining = remaining - const Duration(seconds: 1);
+      remainingTime.value = remaining;
+      if (remaining <= Duration.zero) {
+        _cancelTimers();
         _fadeOutAndStop();
       }
     });
+    _sleepTimer = Timer(Duration(minutes: timerMinutes.value), () {
+      _fadeOutAndStop();
+    });
   }
 
-  void _syncRemainingFromEndTime() {
-    if (_timerEndTime == null) return;
-    final now = DateTime.now();
-    final diff = _timerEndTime!.difference(now);
-    remainingTime.value = diff > Duration.zero ? diff : Duration.zero;
-    if (remainingTime.value > Duration.zero) {
-      _handler.updateTimerNotification(remainingTime.value);
-    }
-  }
-
-  void _cancelTimerTicker() {
+  void _cancelTimers() {
     _timerCountdown?.cancel();
     _timerCountdown = null;
+    _sleepTimer?.cancel();
+    _sleepTimer = null;
   }
 
   Future<void> _fadeOutAndStop() async {
-    _cancelTimerTicker();
-    final savedVol = volume.value;
+    _cancelTimers();
+    final currentVol = _player.volume;
     await AudioHelpers.fadeOut(
-      _player.volume,
+      currentVol,
       3000,
       (v) => _player.setVolume(v),
     );
     await stop();
-    await setVolume(savedVol > 0 ? savedVol : 1.0);
-    timerMinutes.value = 0;
   }
 
   @override
   void onClose() {
-    _cancelTimerTicker();
+    _cancelTimers();
     _player.dispose();
     super.onClose();
   }

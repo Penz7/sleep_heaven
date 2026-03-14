@@ -8,6 +8,7 @@ import 'core/bindings/app_binding.dart';
 import 'core/constants/app_colors.dart';
 import 'core/constants/app_strings.dart';
 import 'core/services/audio_handler.dart';
+import 'core/services/iap_service.dart';
 import 'core/themes/app_theme.dart';
 import 'data/providers/hive_provider.dart';
 import 'routes/app_pages.dart';
@@ -31,6 +32,11 @@ void main() async {
   final hiveProvider = HiveProvider();
   await hiveProvider.init();
   Get.put<HiveProvider>(hiveProvider, permanent: true);
+
+  // Khởi tạo IAP service – đọc cache offline, lắng nghe purchaseStream
+  final iapService = IAPService();
+  await iapService.init();
+  Get.put<IAPService>(iapService, permanent: true);
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

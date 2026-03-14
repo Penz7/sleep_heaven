@@ -1,12 +1,14 @@
+import '../../core/services/iap_service.dart';
 import '../models/sound_model.dart';
 import '../providers/hive_provider.dart';
 import '../providers/local_sound_provider.dart';
 
 /// Repository interface & implementation - quản lý sounds và favorites
 class SoundRepository {
-  SoundRepository(this._hiveProvider);
+  SoundRepository(this._hiveProvider, this._iapService);
 
   final HiveProvider _hiveProvider;
+  final IAPService _iapService;
 
   List<SoundModel> getAllSounds() => LocalSoundProvider.getAllSounds();
 
@@ -27,5 +29,6 @@ class SoundRepository {
 
   bool isFavorite(String soundId) => _hiveProvider.isFavorite(soundId);
 
-  bool get isPremium => _hiveProvider.isPremium;
+  /// Đọc trực tiếp từ IAPService – source of truth là flutter_secure_storage
+  bool get isPremium => _iapService.isPremium.value;
 }
