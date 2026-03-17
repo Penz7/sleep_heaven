@@ -256,3 +256,6 @@ google-services.json
 .flutter-plugins-dependencies
 android/build/reports/problems/problems-report.html
 /android/build/reports/problems
+
+.fvm
+.idea
