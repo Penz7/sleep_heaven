@@ -14,6 +14,9 @@ import 'data/providers/hive_provider.dart';
 import 'routes/app_pages.dart';
 import 'routes/app_routes.dart';
 
+/// Entry point for DEBUG / development builds.
+/// Premium is force-unlocked at startup – no store interaction needed.
+/// Run with: flutter run -t lib/main_dev.dart
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final handler = await AudioService.init(
@@ -28,16 +31,13 @@ void main() async {
   );
   Get.put<SleepAudioHandler>(handler, permanent: true);
 
-  // Khởi tạo Hive trước khi chạy app
   final hiveProvider = HiveProvider();
   await hiveProvider.init();
   Get.put<HiveProvider>(hiveProvider, permanent: true);
 
-  // Khởi tạo IAP service – đọc cache offline, lắng nghe purchaseStream
-  // DEV_MODE=true khi chạy với --dart-define=DEV_MODE=true (dev run config)
-  const bool kDevMode = bool.fromEnvironment('DEV_MODE', defaultValue: false);
+  // devMode = true → premium luôn bật, không gọi store
   final iapService = IAPService();
-  await iapService.init(devMode: kDevMode);
+  await iapService.init(devMode: true);
   Get.put<IAPService>(iapService, permanent: true);
 
   SystemChrome.setPreferredOrientations([
@@ -60,13 +60,14 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (_, child) => GetMaterialApp(
-        title: '${AppStrings.appName} - ${AppStrings.appSubtitle}',
+        title: '[DEV] ${AppStrings.appName}',
         initialBinding: AppBinding(),
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
         themeMode: ThemeMode.dark,
         getPages: AppPages.pages,
         initialRoute: _getInitialRoute(),
+        debugShowCheckedModeBanner: true,
       ),
     );
   }

@@ -20,7 +20,7 @@ class PremiumController extends GetxController {
       // và lưu vào secure_storage khi store xác nhận
     } catch (e) {
       Get.snackbar(
-        'Lỗi',
+        'Error',
         e.toString().replaceFirst('Exception: ', ''),
         snackPosition: SnackPosition.BOTTOM,
       );
@@ -39,12 +39,12 @@ class PremiumController extends GetxController {
       // và hiển thị thông báo thành công
       Get.snackbar(
         'Restore',
-        'Đang kiểm tra giao dịch...',
+        'Checking purchases...',
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
       Get.snackbar(
-        'Lỗi',
+        'Error',
         e.toString().replaceFirst('Exception: ', ''),
         snackPosition: SnackPosition.BOTTOM,
       );

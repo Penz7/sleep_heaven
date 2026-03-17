@@ -4,15 +4,73 @@ Hướng dẫn này dành cho developer thực hiện các tác vụ **ngoài co
 
 ---
 
+## Overview – What Premium Unlocks
+
+Sau khi user mua gói **Premium** (product ID: `premium_unlock`), các tính năng sau được mở khóa:
+
+| Tính năng | Free | Premium |
+|-----------|------|---------|
+| **Âm thanh premium** | Bị khóa (lock icon), tap → redirect màn hình mua | Mở khóa toàn bộ 7+ âm thanh premium |
+| **Mixer – số track** | Tối đa 3 track | Tối đa 5 track |
+| **Thêm nhạc từ thiết bị** | Không có (nút bị ẩn/khóa) | Cho phép thêm nhạc local từ device vào mixer |
+
+---
+
 ## Mục lục
 
-1. [Android – Google Play Console](#android--google-play-console)
-2. [iOS – App Store Connect & Xcode](#ios--app-store-connect--xcode)
-3. [Đổi App ID](#đổi-app-id)
-4. [Android – Signing Release Build](#android--signing-release-build)
-5. [Test Sandbox](#test-sandbox)
-6. [Deploy lên Store](#deploy-lên-store)
-7. [Deadlines quan trọng 2026](#deadlines-quan-trọng-2026)
+1. [Feature Integration (Workflow)](#feature-integration-workflow)
+2. [Android – Google Play Console](#android--google-play-console)
+3. [iOS – App Store Connect & Xcode](#ios--app-store-connect--xcode)
+4. [Local Music Setup](#local-music-setup)
+5. [Đổi App ID](#đổi-app-id)
+6. [Android – Signing Release Build](#android--signing-release-build)
+7. [Test Sandbox](#test-sandbox)
+8. [Deploy lên Store](#deploy-lên-store)
+9. [Deadlines quan trọng 2026](#deadlines-quan-trọng-2026)
+
+---
+
+## Feature Integration (Workflow)
+
+### Luồng Premium Unlock
+
+```
+User mở app
+    │
+    ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ isPremium? (IAPService.isPremium ← SecureStorage cache)          │
+└─────────────────────────────────────────────────────────────────┘
+    │
+    ├── NO  → Sound bị lock icon
+    │         Mixer tối đa 3 track
+    │         Không có nút "Add from Device"
+    │
+    └── YES → Tất cả sounds unlock
+              Mixer tối đa 5 track
+              Nút "Add from Device" hiển thị
+    │
+    ▼
+User tap locked sound hoặc "Add from Device"
+    │
+    ▼
+Redirect → PremiumView
+    │
+    ▼
+User mua premium (IAPService.buyPremium)
+    │
+    ▼
+purchaseStream callback → isPremium = true
+    │
+    ▼
+SecureStorage cache → UI reactive (Obx) cập nhật ngay
+```
+
+### Reactive State
+
+- **Source of truth:** `IAPService.isPremium` (`RxBool`) – observe qua `SoundRepository.isPremium`
+- **Offline cache:** `flutter_secure_storage` key `premium_unlocked` – đọc khi app khởi động
+- **UI:** `SoundCard`, `MixerView` dùng `Obx` để lock icon và nút "Add from Device" cập nhật ngay sau khi mua
 
 ---
 
@@ -83,6 +141,45 @@ File `Runner.entitlements` đã được tạo sẵn trong code. Cần link tron
 ### 5. Thêm Sandbox Tester
 
 **Users & Access → Sandbox Testers → "+"** → Thêm email mới (khác Apple ID thật) dùng để test IAP mà không tốn tiền.
+
+---
+
+## Local Music Setup
+
+Tính năng "Add from Device" cho phép user premium thêm nhạc từ thiết bị vào mixer. Cần cấu hình permissions trên từng platform.
+
+### Dependencies (đã có trong pubspec.yaml)
+
+- `file_picker` – chọn file audio từ device
+- `permission_handler` – request quyền đọc media
+
+### Android Permissions
+
+Thêm vào `android/app/src/main/AndroidManifest.xml`:
+
+```xml
+<!-- Android 13+ (API 33+) -->
+<uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
+<!-- Android 12 trở xuống (fallback) -->
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
+```
+
+### iOS Permissions
+
+Thêm vào `ios/Runner/Info.plist`:
+
+```xml
+<key>NSAppleMusicUsageDescription</key>
+<string>Sleep Heaven cần truy cập thư viện nhạc để thêm nhạc của bạn vào mixer</string>
+```
+
+> Nếu dùng `file_picker` với `type: FileType.audio`, iOS có thể dùng `NSAppleMusicUsageDescription` hoặc `NSPhotoLibraryUsageDescription` tùy nguồn. Kiểm tra [file_picker docs](https://pub.dev/packages/file_picker) để đảm bảo đúng key.
+
+### Storage
+
+Danh sách local tracks được lưu trong `flutter_secure_storage` dưới dạng JSON. Mỗi track gồm: `id`, `title`, `filePath`.
+
+> **Lưu ý:** File path có thể thay đổi khi app reinstall hoặc OS update. User cần chọn lại file nếu track không phát được.
 
 ---
 
@@ -179,6 +276,21 @@ fvm flutter build appbundle --release
 1. Mua thành công khi có mạng
 2. Bật Airplane mode
 3. Mở lại app → premium vẫn unlock (từ `flutter_secure_storage` cache)
+
+### Test Local Music (Premium only)
+
+1. Mua premium trước (hoặc dùng Sandbox/License test account)
+2. Vào Mixer → tap "Add Sound" → chọn tab "Từ thiết bị"
+3. Grant permission khi được hỏi (Android: READ_MEDIA_AUDIO, iOS: Music Library)
+4. Chọn file audio (.mp3, .m4a, .ogg, v.v.) từ device
+5. Track xuất hiện trong danh sách và có thể thêm vào mixer
+6. Kiểm tra mixer cho phép tối đa 5 track (thay vì 3 khi free)
+
+### Test Reactive UI sau khi mua
+
+1. Mở app (chưa mua premium)
+2. Mua premium qua IAP
+3. Ngay sau khi thanh toán thành công: lock icon biến mất, nút "Add from Device" xuất hiện, mixer max tracks = 5
 
 ---
 
