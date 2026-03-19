@@ -86,7 +86,7 @@ class _LibraryContent extends StatelessWidget {
         builder: (c) => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 96),
+            const SizedBox(height: 120),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),

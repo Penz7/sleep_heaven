@@ -36,8 +36,8 @@ class MixerController extends GetxController {
   void _updateIsPlaying() {
     final playing = tracks.values.any((t) => t.player.playing);
     isPlayingRx.value = playing;
-    // Đồng bộ trạng thái notification khi bất kỳ track nào thay đổi
-    _handler.setPlaybackState(playing: playing);
+    // Mixer không có timeline nên position = zero; iOS vẫn hiển thị trạng thái play/pause đúng
+    _handler.setPlaybackState(playing: playing, position: Duration.zero);
   }
 
   Future<void> addTrack(SoundModel sound) async {
@@ -51,8 +51,7 @@ class MixerController extends GetxController {
     final session = await AudioSession.instance;
     await session.configure(const AudioSessionConfiguration(
       avAudioSessionCategory: AVAudioSessionCategory.playback,
-      avAudioSessionCategoryOptions: AVAudioSessionCategoryOptions.mixWithOthers,
-      avAudioSessionMode: AVAudioSessionMode.spokenAudio,
+      avAudioSessionMode: AVAudioSessionMode.defaultMode,
     ));
 
     final player = AudioPlayer();
@@ -90,8 +89,7 @@ class MixerController extends GetxController {
     final session = await AudioSession.instance;
     await session.configure(const AudioSessionConfiguration(
       avAudioSessionCategory: AVAudioSessionCategory.playback,
-      avAudioSessionCategoryOptions: AVAudioSessionCategoryOptions.mixWithOthers,
-      avAudioSessionMode: AVAudioSessionMode.spokenAudio,
+      avAudioSessionMode: AVAudioSessionMode.defaultMode,
     ));
 
     final player = AudioPlayer();
@@ -143,8 +141,7 @@ class MixerController extends GetxController {
     final session = await AudioSession.instance;
     await session.configure(const AudioSessionConfiguration(
       avAudioSessionCategory: AVAudioSessionCategory.playback,
-      avAudioSessionCategoryOptions: AVAudioSessionCategoryOptions.mixWithOthers,
-      avAudioSessionMode: AVAudioSessionMode.spokenAudio,
+      avAudioSessionMode: AVAudioSessionMode.defaultMode,
     ));
     // Đăng ký mixer làm chủ notification khi bắt đầu phát
     _handler.onPlayRequested = playAll;
