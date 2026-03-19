@@ -58,13 +58,12 @@ class PremiumView extends GetView<PremiumController> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Get access to all 20+ sounds, no ads, and mix unlimited tracks.',
+                  'Get access to all sounds, and mix unlimited tracks.',
                   style: Theme.of(context).textTheme.bodyLarge,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32),
                 _FeatureItem(icon: Icons.lock_open, text: 'Unlock all premium sounds'),
-                _FeatureItem(icon: Icons.block, text: 'Remove ads'),
                 _FeatureItem(icon: Icons.tune, text: 'Mix unlimited tracks'),
                 const Spacer(),
                 Obx(
