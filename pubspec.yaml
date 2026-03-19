@@ -62,13 +62,13 @@ flutter:
   assets:
     - assets/sounds/rain/
     - assets/sounds/white_noise/
-    - assets/sounds/baby/
+    - assets/sounds/music_box/
     - assets/sounds/nature/
     - assets/icons/
     - assets/images/
     - assets/images/rain/
     - assets/images/white_noise/
-    - assets/images/baby/
+    - assets/images/music_box/
     - assets/images/nature/
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -101,8 +101,8 @@ class PlayerView extends GetView<PlayerController> {
         return 'Deep Sleep Series';
       case 'white_noise':
         return 'White Noise Collection';
-      case 'baby':
-        return 'Lullaby & Baby';
+      case 'music_box':
+        return 'Music Box & Lullaby';
       case 'nature':
         return 'Nature Sounds';
       default:

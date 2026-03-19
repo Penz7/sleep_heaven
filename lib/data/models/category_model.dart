@@ -13,7 +13,7 @@ class CategoryModel {
   static const List<CategoryModel> all = [
     CategoryModel(id: 'rain', name: 'Rain', icon: 'rain'),
     CategoryModel(id: 'white_noise', name: 'White Noise', icon: 'white_noise'),
-    CategoryModel(id: 'baby', name: 'Baby', icon: 'baby'),
+    CategoryModel(id: 'music_box', name: 'Music Box', icon: 'music_box'),
     CategoryModel(id: 'nature', name: 'Nature', icon: 'nature'),
   ];
 }

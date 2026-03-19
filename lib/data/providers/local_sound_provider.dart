@@ -1,10 +1,10 @@
 import '../models/sound_model.dart';
 
-/// Provider cung cấp danh sách sounds hardcode - 12 free + 8 premium
+/// Provider cung cấp danh sách sounds hardcode - 7 free + 14 premium
 class LocalSoundProvider {
   static List<SoundModel> getAllSounds() {
     return [
-      // Rain - 3 free, 2 premium
+      // Rain - 2 free, 3 premium
       const SoundModel(
         id: 'rain_light',
         title: 'Light Rain',
@@ -12,7 +12,7 @@ class LocalSoundProvider {
         assetPath: 'assets/sounds/rain/rain_light.mp3',
         imagePath: 'assets/images/rain/rain_light.png',
         isPremium: false,
-      ),  
+      ),
       const SoundModel(
         id: 'rain_heavy',
         title: 'Heavy Rain',
@@ -26,7 +26,7 @@ class LocalSoundProvider {
         title: 'Rain on Window',
         categoryId: 'rain',
         assetPath: 'assets/sounds/rain/rain_window.mp3',
-        isPremium: false,
+        isPremium: true,
         imagePath: 'assets/images/rain/rain_window.png',
       ),
       const SoundModel(
@@ -42,10 +42,10 @@ class LocalSoundProvider {
         title: 'Rain Forest',
         categoryId: 'rain',
         assetPath: 'assets/sounds/rain/rain_forest.mp3',
-        isPremium: false,
+        isPremium: true,
         imagePath: 'assets/images/rain/rain_forest.png',
       ),
-      // White Noise - 3 free, 2 premium
+      // White Noise - 2 free, 3 premium
       const SoundModel(
         id: 'white_noise',
         title: 'White Noise',
@@ -67,7 +67,7 @@ class LocalSoundProvider {
         title: 'Fan',
         categoryId: 'white_noise',
         assetPath: 'assets/sounds/white_noise/fan.mp3',
-        isPremium: false,
+        isPremium: true,
         imagePath: 'assets/images/white_noise/fan.png',
       ),
       const SoundModel(
@@ -86,40 +86,56 @@ class LocalSoundProvider {
         isPremium: true,
         imagePath: 'assets/images/white_noise/air_conditioner.png',
       ),
-      // Baby - 3 free, 2 premium
+      // Music Box - 2 free, 4 premium
       const SoundModel(
-        id: 'heartbeat',
-        title: 'Heartbeat',
-        categoryId: 'baby',
-        assetPath: 'assets/sounds/baby/heartbeat.mp3',
+        id: 'music_box',
+        title: 'Music Box',
+        categoryId: 'music_box',
+        assetPath: 'assets/sounds/music_box/music_box.mp3',
         isPremium: false,
-        imagePath: 'assets/images/baby/baby.png',
-      ),
-      const SoundModel(
-        id: 'shushing',
-        title: 'Shushing',
-        categoryId: 'baby',
-        assetPath: 'assets/sounds/baby/shushing.mp3',
-        isPremium: false,
-        imagePath: 'assets/images/baby/baby.png',
-      ),
-      const SoundModel(
-        id: 'lullaby_piano',
-        title: 'Lullaby Piano',
-        categoryId: 'baby',
-        assetPath: 'assets/sounds/baby/lullaby_piano.mp3',
-        isPremium: false,
-        imagePath: 'assets/images/baby/baby.png',
+        imagePath: 'assets/images/music_box/music_box.png',
       ),
       const SoundModel(
         id: 'hair_dryer',
         title: 'Hair Dryer',
-        categoryId: 'baby',
-        assetPath: 'assets/sounds/baby/hair_dryer.mp3',
-        isPremium: true,
-        imagePath: 'assets/images/baby/baby.png',
+        categoryId: 'music_box',
+        assetPath: 'assets/sounds/music_box/hair_dryer.mp3',
+        isPremium: false,
+        imagePath: 'assets/images/music_box/music_box.png',
       ),
-      // Nature - 3 free, 2 premium
+      const SoundModel(
+        id: 'heartbeat',
+        title: 'Heartbeat',
+        categoryId: 'music_box',
+        assetPath: 'assets/sounds/music_box/heartbeat.mp3',
+        isPremium: true,
+        imagePath: 'assets/images/music_box/music_box.png',
+      ),
+      const SoundModel(
+        id: 'shushing',
+        title: 'Shushing',
+        categoryId: 'music_box',
+        assetPath: 'assets/sounds/music_box/shushing.mp3',
+        isPremium: true,
+        imagePath: 'assets/images/music_box/music_box.png',
+      ),
+      const SoundModel(
+        id: 'lullaby_piano',
+        title: 'Lullaby Piano',
+        categoryId: 'music_box',
+        assetPath: 'assets/sounds/music_box/lullaby_piano.mp3',
+        isPremium: true,
+        imagePath: 'assets/images/music_box/music_box.png',
+      ),
+      const SoundModel(
+        id: 'cliderman',
+        title: 'Cliderman',
+        categoryId: 'music_box',
+        assetPath: 'assets/sounds/music_box/cliderman.mp3',
+        isPremium: true,
+        imagePath: 'assets/images/music_box/music_box.png',
+      ),
+      // Nature - 1 free, 4 premium
       const SoundModel(
         id: 'ocean_waves',
         title: 'Ocean Waves',
@@ -133,15 +149,15 @@ class LocalSoundProvider {
         title: 'Forest Birds',
         categoryId: 'nature',
         assetPath: 'assets/sounds/nature/forest_birds.mp3',
-        isPremium: false,
-        imagePath: 'assets/images/nature/forest_birds.png',
+        isPremium: true,
+        imagePath: 'assets/images/nature/forest_bird.png',
       ),
       const SoundModel(
         id: 'river_stream',
         title: 'River Stream',
         categoryId: 'nature',
         assetPath: 'assets/sounds/nature/river_stream.mp3',
-        isPremium: false,
+        isPremium: true,
         imagePath: 'assets/images/nature/river_stream.png',
       ),
       const SoundModel(

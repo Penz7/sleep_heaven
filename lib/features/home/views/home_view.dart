@@ -335,8 +335,8 @@ class _CategoriesSection extends StatelessWidget {
         return Icons.cloudy_snowing;
       case 'white_noise':
         return Icons.graphic_eq;
-      case 'baby':
-        return Icons.child_care;
+      case 'music_box':
+        return Icons.piano;
       case 'nature':
         return Icons.forest;
       default:

@@ -67,19 +67,14 @@ class PremiumView extends GetView<PremiumController> {
                 _FeatureItem(icon: Icons.block, text: 'Remove ads'),
                 _FeatureItem(icon: Icons.tune, text: 'Mix unlimited tracks'),
                 const Spacer(),
-                Obx(() => CustomButton(
-                      label: 'Get Premium',
-                      icon: Icons.star,
-                      onPressed: controller.purchasePremium,
-                      isLoading: controller.isLoading.value,
-                    )),
-                const SizedBox(height: 12),
-                Obx(() => CustomButton(
-                      label: AppStrings.restorePurchase,
-                      isOutlined: true,
-                      onPressed: controller.restorePurchase,
-                      isLoading: controller.isLoading.value,
-                    )),
+                Obx(
+                  () => CustomButton(
+                    label: 'Get Premium',
+                    icon: Icons.star,
+                    onPressed: controller.purchasePremium,
+                    isLoading: controller.isLoading.value,
+                  ),
+                ),
               ],
             ),
           ),
