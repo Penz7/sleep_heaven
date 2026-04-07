@@ -21,6 +21,7 @@ Release signing requires these values:
 - `ANDROID_SIGNING_STORE_PASSWORD`
 - `ANDROID_SIGNING_KEY_ALIAS`
 - `ANDROID_SIGNING_KEY_PASSWORD`
+- `ANDROID_SIGNING_PROPERTIES_FILE` (optional override for local properties file path)
 
 ### Source Priority
 
@@ -46,6 +47,12 @@ keyPassword=...
 3. Ensure the file path and keystore path are ignored by `.gitignore`.
 4. Run release build without echoing values in terminal commands.
 
+Local release command:
+
+```bash
+flutter build apk --release --dart-define=DEV_MODE=false
+```
+
 ## CI Setup (Secure)
 
 Configure the signing values as repository or environment secrets:
@@ -56,6 +63,14 @@ Configure the signing values as repository or environment secrets:
 - `ANDROID_SIGNING_KEY_PASSWORD`
 
 CI must inject these values at runtime. Do not persist them to tracked files.
+
+CI release command:
+
+```bash
+flutter clean
+flutter pub get
+flutter build apk --release --dart-define=DEV_MODE=false
+```
 
 ## Log Sanitization Rules
 

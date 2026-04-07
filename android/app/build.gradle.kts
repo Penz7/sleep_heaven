@@ -7,6 +7,35 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val isReleaseBuildRequested: Boolean = gradle.startParameter.taskNames.any { taskName ->
+    taskName.contains("release", ignoreCase = true) ||
+        taskName.contains("bundle", ignoreCase = true) ||
+        taskName.contains("publish", ignoreCase = true)
+}
+
+val localSigningPropertiesPath: String =
+    System.getenv("ANDROID_SIGNING_PROPERTIES_FILE") ?: "key.properties.local"
+val localSigningPropertiesFile = rootProject.file(localSigningPropertiesPath)
+val localSigningProperties = Properties().apply {
+    if (localSigningPropertiesFile.exists()) {
+        localSigningPropertiesFile.inputStream().use { input -> load(input) }
+    }
+}
+
+fun resolveSigningValue(localKey: String, envKey: String): String? {
+    val envValue = System.getenv(envKey)?.trim()
+    if (!envValue.isNullOrEmpty()) {
+        return envValue
+    }
+
+    val localValue = localSigningProperties.getProperty(localKey)?.trim()
+    if (!localValue.isNullOrEmpty()) {
+        return localValue
+    }
+
+    return null
+}
+
 android {
     namespace = "dat.c.sleepheaven"
     compileSdk = 36
@@ -31,15 +60,37 @@ android {
 
     signingConfigs {
         create("release") {
-            val keystorePropertiesFile = rootProject.file("key.properties")
-            if (keystorePropertiesFile.exists()) {
-                val props = Properties().apply {
-                    load(keystorePropertiesFile.inputStream())
+            val storeFileValue: String? = resolveSigningValue("storeFile", "ANDROID_SIGNING_STORE_FILE")
+            val storePasswordValue: String? = resolveSigningValue("storePassword", "ANDROID_SIGNING_STORE_PASSWORD")
+            val keyAliasValue: String? = resolveSigningValue("keyAlias", "ANDROID_SIGNING_KEY_ALIAS")
+            val keyPasswordValue: String? = resolveSigningValue("keyPassword", "ANDROID_SIGNING_KEY_PASSWORD")
+
+            if (!storeFileValue.isNullOrEmpty()) {
+                storeFile = file(storeFileValue)
+            }
+            if (!storePasswordValue.isNullOrEmpty()) {
+                storePassword = storePasswordValue
+            }
+            if (!keyAliasValue.isNullOrEmpty()) {
+                keyAlias = keyAliasValue
+            }
+            if (!keyPasswordValue.isNullOrEmpty()) {
+                keyPassword = keyPasswordValue
+            }
+
+            if (isReleaseBuildRequested) {
+                val missingEnvKeys = mutableListOf<String>()
+                if (storeFileValue.isNullOrEmpty()) missingEnvKeys.add("ANDROID_SIGNING_STORE_FILE")
+                if (storePasswordValue.isNullOrEmpty()) missingEnvKeys.add("ANDROID_SIGNING_STORE_PASSWORD")
+                if (keyAliasValue.isNullOrEmpty()) missingEnvKeys.add("ANDROID_SIGNING_KEY_ALIAS")
+                if (keyPasswordValue.isNullOrEmpty()) missingEnvKeys.add("ANDROID_SIGNING_KEY_PASSWORD")
+
+                if (missingEnvKeys.isNotEmpty()) {
+                    throw GradleException(
+                        "Missing required Android signing values: ${missingEnvKeys.joinToString(", ")}. " +
+                            "Provide environment variables or add values to $localSigningPropertiesPath."
+                    )
                 }
-                keyAlias      = props["keyAlias"] as String
-                keyPassword   = props["keyPassword"] as String
-                storeFile     = file(props["storeFile"] as String)
-                storePassword = props["storePassword"] as String
             }
         }
     }

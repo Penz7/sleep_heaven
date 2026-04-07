@@ -11,7 +11,7 @@ void main() {
     expect(gradleContent, contains('ANDROID_SIGNING_STORE_PASSWORD'));
     expect(gradleContent, contains('ANDROID_SIGNING_KEY_ALIAS'));
     expect(gradleContent, contains('ANDROID_SIGNING_KEY_PASSWORD'));
-    expect(gradleContent, contains('android/key.properties.local'));
+    expect(gradleContent, contains('key.properties.local'));
     expect(gradleContent, contains('Missing required Android signing values'));
   });
 }
