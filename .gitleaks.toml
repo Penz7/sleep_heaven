@@ -1,0 +1,20 @@
+title = "sleep_heaven gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Allowlist non-secret development artifacts only"
+paths = [
+  '''(^|/)\.git/''',
+  '''(^|/)build/''',
+  '''(^|/)\.dart_tool/''',
+  '''(^|/)pubspec\.lock$''',
+  '''(^|/)docs/security/secrets\.md$'''
+]
+
+[[rules]]
+id = "sleep-heaven-synthetic-secret"
+description = "Deterministic synthetic secret detector for CI verification"
+regex = '''SLEEP_HEAVEN_TEST_SECRET=[A-Za-z0-9_\-]{16,}'''
+tags = ["synthetic", "verification"]
