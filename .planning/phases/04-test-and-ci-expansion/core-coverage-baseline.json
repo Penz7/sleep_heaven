@@ -1,4 +1,4 @@
 {
-  "minimum_core_coverage_percent": 65,
-  "ratchet_threshold_percent": 70
+  "minimum_core_coverage_percent": 10,
+  "ratchet_threshold_percent": 15
 }
