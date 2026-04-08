@@ -13,8 +13,8 @@
 - **Immediate next milestone**: Security baseline and CI secret scanning active
 
 ## Performance Metrics Baseline
-- **Automated test maturity**: Very low (default scaffold test only)
-- **CI maturity**: None detected
+- **Automated test maturity**: Baseline (signing contract + GetX/Hive/IAP bootstrap smoke)
+- **CI maturity**: `secret-scan` + `flutter-ci` (analyze, test, debug APK) on PR/push
 - **Observability maturity**: None detected
 - **Security posture (repo/process)**: At risk due to signing secret handling process gaps
 - **Reliability confidence**: Low for IAP and audio lifecycle transitions
@@ -43,7 +43,7 @@
 
 ## Session Continuity
 - **Last completed artifact**: `.planning/phases/01-security-and-release-hardening/01-01-SUMMARY.md`
-- **Next action**: Start Phase 2 reliability and observability baseline planning/execution
+- **Next action**: Confirm first green `Flutter CI` run on GitHub; complete release log audit; re-run `/gsd-verifier` on `01-01-PLAN.md`; then Phase 2 planning
 - **Execution rhythm**: Daily evidence-driven closeout (deliverable + validation check)
 
 ## Decision Log

@@ -14,7 +14,9 @@ const String _premiumStorageKey = 'premium_unlocked';
 
 /// Service quản lý IAP non-consumable – singleton, sống suốt vòng đời app
 class IAPService extends GetxService {
-  final InAppPurchase _iap = InAppPurchase.instance;
+  /// Lazy: `InAppPurchase.instance` touches platform; defer until non-dev init paths.
+  InAppPurchase get _iap => InAppPurchase.instance;
+
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   StreamSubscription<List<PurchaseDetails>>? _purchaseSubscription;
