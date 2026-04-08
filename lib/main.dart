@@ -180,16 +180,14 @@ class MyApp extends StatelessWidget {
             if (!Get.isRegistered<NavigationStateService>()) {
               return;
             }
-            final NavigationStateService nav = Get.find<NavigationStateService>();
+            final NavigationStateService nav =
+                Get.find<NavigationStateService>();
             nav.updateRoute(routing?.current);
           },
           builder: (BuildContext context, Widget? routedChild) {
             final Widget body = routedChild ?? const SizedBox.shrink();
             final Widget bodyWithBubble = Stack(
-              children: <Widget>[
-                body,
-                const FloatingPlaybackBubble(),
-              ],
+              children: <Widget>[body, const FloatingPlaybackBubble()],
             );
             if (!bootState.result.isDegraded) {
               return bodyWithBubble;

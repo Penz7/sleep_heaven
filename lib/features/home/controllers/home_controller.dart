@@ -16,7 +16,10 @@ class HomeController extends GetxController {
     if (_repository.isPremium) {
       return sounds.take(6).toList();
     }
-    return sounds.where((SoundModel sound) => !sound.isPremium).take(6).toList();
+    return sounds
+        .where((SoundModel sound) => !sound.isPremium)
+        .take(6)
+        .toList();
   }
 
   bool isFavorite(String soundId) => _repository.isFavorite(soundId);

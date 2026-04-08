@@ -22,7 +22,8 @@ class _FloatingPlaybackBubbleState extends State<FloatingPlaybackBubble>
     with SingleTickerProviderStateMixin {
   static const double _bubbleSize = 66;
   static const double _collapsedHitboxPadding = 28;
-  static const double _collapsedPanelSize = _bubbleSize + _collapsedHitboxPadding;
+  static const double _collapsedPanelSize =
+      _bubbleSize + _collapsedHitboxPadding;
   static const double _margin = 16;
   static const double _topSafeOffset = 56;
   static const double _bottomSafeOffset = 96;
@@ -58,7 +59,8 @@ class _FloatingPlaybackBubbleState extends State<FloatingPlaybackBubble>
 
   @override
   Widget build(BuildContext context) {
-    final PlayerController playerController = Get.isRegistered<PlayerController>()
+    final PlayerController playerController =
+        Get.isRegistered<PlayerController>()
         ? Get.find<PlayerController>()
         : Get.put<PlayerController>(PlayerController(), permanent: true);
     final MixerController mixerController = Get.isRegistered<MixerController>()
@@ -67,7 +69,10 @@ class _FloatingPlaybackBubbleState extends State<FloatingPlaybackBubble>
     final NavigationStateService navigationStateService =
         Get.isRegistered<NavigationStateService>()
         ? Get.find<NavigationStateService>()
-        : Get.put<NavigationStateService>(NavigationStateService(), permanent: true);
+        : Get.put<NavigationStateService>(
+            NavigationStateService(),
+            permanent: true,
+          );
 
     return Obx(() {
       final Size screen = MediaQuery.of(context).size;
@@ -77,8 +82,10 @@ class _FloatingPlaybackBubbleState extends State<FloatingPlaybackBubble>
       );
       final String route = navigationStateService.currentRoute.value;
       final bool hiddenOnSourceRoute =
-          (state.source == _ActivePlaybackSource.player && route == Routes.player) ||
-          (state.source == _ActivePlaybackSource.mixer && route == Routes.mixer);
+          (state.source == _ActivePlaybackSource.player &&
+              route == Routes.player) ||
+          (state.source == _ActivePlaybackSource.mixer &&
+              route == Routes.mixer);
       if ((!state.visible && !_isStopping) || hiddenOnSourceRoute) {
         if (_discRotationController.isAnimating) {
           _discRotationController.stop();
@@ -155,7 +162,8 @@ class _FloatingPlaybackBubbleState extends State<FloatingPlaybackBubble>
                       panelHeight: panelHeight,
                       position: next,
                     );
-                    _draggingRight = _position.dx > (screen.width - panelWidth) / 2;
+                    _draggingRight =
+                        _position.dx > (screen.width - panelWidth) / 2;
                   });
                 },
                 onPanEnd: (DragEndDetails details) {
@@ -169,7 +177,8 @@ class _FloatingPlaybackBubbleState extends State<FloatingPlaybackBubble>
                   setState(() {
                     _isDragging = false;
                     _position = snapped;
-                    _draggingRight = _position.dx > (screen.width - panelWidth) / 2;
+                    _draggingRight =
+                        _position.dx > (screen.width - panelWidth) / 2;
                   });
                   _startIdleCountdown();
                 },
@@ -184,7 +193,8 @@ class _FloatingPlaybackBubbleState extends State<FloatingPlaybackBubble>
                   setState(() {
                     _isDragging = false;
                     _position = snapped;
-                    _draggingRight = _position.dx > (screen.width - panelWidth) / 2;
+                    _draggingRight =
+                        _position.dx > (screen.width - panelWidth) / 2;
                   });
                   _startIdleCountdown();
                 },
@@ -196,50 +206,66 @@ class _FloatingPlaybackBubbleState extends State<FloatingPlaybackBubble>
                   curve: Curves.easeOutCubic,
                   child: AnimatedOpacity(
                     opacity: _isStopping ? 0.0 : (_isFocused ? 1.0 : 0.52),
-                  duration: const Duration(milliseconds: 220),
-                  curve: Curves.easeOut,
-                  child: AnimatedScale(
-                    scale: _isStopping
-                        ? 0.74
-                        : (_isDragging ? 1.07 : (_isFocused ? 1.0 : 0.62)),
-                    duration: const Duration(milliseconds: 180),
-                    curve: Curves.easeOutBack,
-                    child: TweenAnimationBuilder<double>(
-                      duration: const Duration(milliseconds: 320),
+                    duration: const Duration(milliseconds: 220),
+                    curve: Curves.easeOut,
+                    child: AnimatedScale(
+                      scale: _isStopping
+                          ? 0.74
+                          : (_isDragging ? 1.07 : (_isFocused ? 1.0 : 0.62)),
+                      duration: const Duration(milliseconds: 180),
                       curve: Curves.easeOutBack,
-                      tween: Tween<double>(begin: 1.0, end: _introPulse ? 1.12 : 1.0),
-                      builder: (BuildContext context, double introScale, Widget? child) {
-                        return Transform.scale(scale: introScale, child: child);
-                      },
-                      child: AnimatedSize(
-                        duration: const Duration(milliseconds: 220),
-                        curve: Curves.easeOutCubic,
-                        child: _isExpanded
-                            ? _ExpandedBubblePanel(
-                                source: state.source,
-                                isPlaying: state.isPlaying,
-                                title: _resolveActiveTitle(
+                      child: TweenAnimationBuilder<double>(
+                        duration: const Duration(milliseconds: 320),
+                        curve: Curves.easeOutBack,
+                        tween: Tween<double>(
+                          begin: 1.0,
+                          end: _introPulse ? 1.12 : 1.0,
+                        ),
+                        builder:
+                            (
+                              BuildContext context,
+                              double introScale,
+                              Widget? child,
+                            ) {
+                              return Transform.scale(
+                                scale: introScale,
+                                child: child,
+                              );
+                            },
+                        child: AnimatedSize(
+                          duration: const Duration(milliseconds: 220),
+                          curve: Curves.easeOutCubic,
+                          child: _isExpanded
+                              ? _ExpandedBubblePanel(
                                   source: state.source,
-                                  playerController: playerController,
-                                  mixerController: mixerController,
+                                  isPlaying: state.isPlaying,
+                                  title: _resolveActiveTitle(
+                                    source: state.source,
+                                    playerController: playerController,
+                                    mixerController: mixerController,
+                                  ),
+                                  onBubbleTap: _onPrimaryTap,
+                                  onBubbleDoubleTap: () =>
+                                      _openSourceRoute(state.source),
+                                  onPlayPause: () =>
+                                      _togglePlayPause(state.source),
+                                  onStop: () => _stop(state.source),
+                                  discRotationController:
+                                      _discRotationController,
+                                  alignRight: _draggingRight,
+                                )
+                              : _CollapsedBubble(
+                                  isPlaying: state.isPlaying,
+                                  onTap: _onPrimaryTap,
+                                  onDoubleTap: () =>
+                                      _openSourceRoute(state.source),
+                                  discRotationController:
+                                      _discRotationController,
+                                  alignRight: _draggingRight,
                                 ),
-                                onBubbleTap: _onPrimaryTap,
-                                onBubbleDoubleTap: () => _openSourceRoute(state.source),
-                                onPlayPause: () => _togglePlayPause(state.source),
-                                onStop: () => _stop(state.source),
-                                discRotationController: _discRotationController,
-                                alignRight: _draggingRight,
-                              )
-                            : _CollapsedBubble(
-                                isPlaying: state.isPlaying,
-                                onTap: _onPrimaryTap,
-                                onDoubleTap: () => _openSourceRoute(state.source),
-                                discRotationController: _discRotationController,
-                                alignRight: _draggingRight,
-                              ),
+                        ),
                       ),
                     ),
-                  ),
                   ),
                 ),
               ),
@@ -255,9 +281,11 @@ class _FloatingPlaybackBubbleState extends State<FloatingPlaybackBubble>
     required MixerController mixerController,
   }) {
     final bool mixerVisible =
-        mixerController.hasActiveSession.value || mixerController.isPlayingRx.value;
+        mixerController.hasActiveSession.value ||
+        mixerController.isPlayingRx.value;
     final bool playerVisible =
-        playerController.hasActiveSession.value || playerController.isPlaying.value;
+        playerController.hasActiveSession.value ||
+        playerController.isPlaying.value;
 
     if (mixerVisible) {
       return _PlaybackBubbleState(
@@ -398,9 +426,15 @@ class _FloatingPlaybackBubbleState extends State<FloatingPlaybackBubble>
     required double panelHeight,
     required Offset position,
   }) {
-    final double maxX = (screenSize.width - panelWidth - _margin).clamp(_margin, screenSize.width);
+    final double maxX = (screenSize.width - panelWidth - _margin).clamp(
+      _margin,
+      screenSize.width,
+    );
     final double maxY =
-        (screenSize.height - panelHeight - _margin - _bottomSafeOffset).clamp(_margin, screenSize.height);
+        (screenSize.height - panelHeight - _margin - _bottomSafeOffset).clamp(
+          _margin,
+          screenSize.height,
+        );
     return Offset(
       position.dx.clamp(_margin, maxX),
       position.dy.clamp(_margin + _topSafeOffset, maxY),
@@ -514,10 +548,13 @@ class _CollapsedBubble extends StatelessWidget {
           width: _FloatingPlaybackBubbleState._collapsedPanelSize,
           height: _FloatingPlaybackBubbleState._collapsedPanelSize,
           child: Align(
-            alignment: alignRight ? Alignment.centerRight : Alignment.centerLeft,
+            alignment: alignRight
+                ? Alignment.centerRight
+                : Alignment.centerLeft,
             child: Semantics(
               label: 'Playback bubble',
-              hint: 'Tap to focus, tap again to expand, double tap to open source',
+              hint:
+                  'Tap to focus, tap again to expand, double tap to open source',
               button: true,
               child: _BubbleDisc(
                 isPlaying: isPlaying,
@@ -623,14 +660,24 @@ class _ExpandedBubblePanel extends StatelessWidget {
 
     final List<Widget> rowChildren = alignRight
         ? <Widget>[
-            Expanded(child: Row(mainAxisSize: MainAxisSize.min, children: infoAndActions)),
+            Expanded(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: infoAndActions,
+              ),
+            ),
             const SizedBox(width: 10),
             disc,
           ]
         : <Widget>[
             disc,
             const SizedBox(width: 10),
-            Expanded(child: Row(mainAxisSize: MainAxisSize.min, children: infoAndActions)),
+            Expanded(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: infoAndActions,
+              ),
+            ),
           ];
 
     return Material(
@@ -727,11 +774,10 @@ class _BubbleDisc extends StatelessWidget {
       child: AnimatedBuilder(
         animation: discRotationController,
         builder: (BuildContext context, Widget? child) {
-          final double angle = isPlaying ? discRotationController.value * 2 * math.pi : 0;
-          return Transform.rotate(
-            angle: angle,
-            child: child,
-          );
+          final double angle = isPlaying
+              ? discRotationController.value * 2 * math.pi
+              : 0;
+          return Transform.rotate(angle: angle, child: child);
         },
         child: Stack(
           alignment: Alignment.center,

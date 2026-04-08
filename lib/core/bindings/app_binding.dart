@@ -28,7 +28,10 @@ class AppBinding extends Bindings {
       Get.put<MixerController>(MixerController(), permanent: true);
     }
     if (!Get.isRegistered<NavigationStateService>()) {
-      Get.put<NavigationStateService>(NavigationStateService(), permanent: true);
+      Get.put<NavigationStateService>(
+        NavigationStateService(),
+        permanent: true,
+      );
     }
   }
 }
