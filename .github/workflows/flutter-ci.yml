@@ -37,5 +37,8 @@ jobs:
       - name: Test
         run: flutter test
 
+      - name: Catalog contract tests
+        run: flutter test test/data/catalog/catalog_schema_validation_test.dart test/data/catalog/catalog_loader_compatibility_test.dart
+
       - name: Build debug APK (no release signing)
         run: flutter build apk --debug --dart-define=DEV_MODE=true
