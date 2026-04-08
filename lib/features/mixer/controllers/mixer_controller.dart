@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../../../core/services/audio_handler.dart';
+import '../../../data/models/local_track_model.dart';
 import '../../../data/models/sound_model.dart';
 import '../../../data/repositories/sound_repository.dart';
 import '../../../routes/app_routes.dart';
@@ -13,7 +14,8 @@ class MixerController extends GetxController {
   final SoundRepository _repository = Get.find<SoundRepository>();
   late final SleepAudioHandler _handler;
 
-  static const int maxTracks = 3;
+  /// Premium: 5 tracks, Free: 3 tracks
+  int get maxTracks => _repository.isPremium ? 5 : 3;
 
   final RxMap<String, MixerTrack> tracks = <String, MixerTrack>{}.obs;
 
@@ -34,8 +36,8 @@ class MixerController extends GetxController {
   void _updateIsPlaying() {
     final playing = tracks.values.any((t) => t.player.playing);
     isPlayingRx.value = playing;
-    // Đồng bộ trạng thái notification khi bất kỳ track nào thay đổi
-    _handler.setPlaybackState(playing: playing);
+    // Mixer không có timeline nên position = zero; iOS vẫn hiển thị trạng thái play/pause đúng
+    _handler.setPlaybackState(playing: playing, position: Duration.zero);
   }
 
   Future<void> addTrack(SoundModel sound) async {
@@ -49,15 +51,19 @@ class MixerController extends GetxController {
     final session = await AudioSession.instance;
     await session.configure(const AudioSessionConfiguration(
       avAudioSessionCategory: AVAudioSessionCategory.playback,
-      avAudioSessionCategoryOptions: AVAudioSessionCategoryOptions.mixWithOthers,
-      avAudioSessionMode: AVAudioSessionMode.spokenAudio,
+      avAudioSessionMode: AVAudioSessionMode.defaultMode,
     ));
 
     final player = AudioPlayer();
     try {
       await player.setAsset(sound.assetPath);
       await player.setLoopMode(LoopMode.one);
-      tracks[sound.id] = MixerTrack(sound: sound, player: player, volume: 0.7.obs);
+      tracks[sound.id] = MixerTrack(
+        sound: sound,
+        localTrack: null,
+        player: player,
+        volume: 0.7.obs,
+      );
 
       // Lắng nghe playingStream để cập nhật isPlayingRx khi state thay đổi
       _playingSubscriptions[sound.id] = player.playingStream.listen((_) {
@@ -70,6 +76,42 @@ class MixerController extends GetxController {
       }
     } catch (e) {
       Get.snackbar('Error', 'Could not load: $e');
+      player.dispose();
+    }
+  }
+
+  /// Thêm track từ file local (premium only – gọi từ UI đã check)
+  Future<void> addLocalTrack(LocalTrackModel localTrack) async {
+    final trackId = localTrack.id;
+    if (tracks.containsKey(trackId)) return;
+    if (tracks.length >= maxTracks) return;
+
+    final session = await AudioSession.instance;
+    await session.configure(const AudioSessionConfiguration(
+      avAudioSessionCategory: AVAudioSessionCategory.playback,
+      avAudioSessionMode: AVAudioSessionMode.defaultMode,
+    ));
+
+    final player = AudioPlayer();
+    try {
+      await player.setFilePath(localTrack.filePath);
+      await player.setLoopMode(LoopMode.one);
+      tracks[trackId] = MixerTrack(
+        sound: null,
+        localTrack: localTrack,
+        player: player,
+        volume: 0.7.obs,
+      );
+
+      _playingSubscriptions[trackId] = player.playingStream.listen((_) {
+        _updateIsPlaying();
+      });
+
+      if (isPlayingRx.value) {
+        player.play();
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Could not load file: $e');
       player.dispose();
     }
   }
@@ -99,8 +141,7 @@ class MixerController extends GetxController {
     final session = await AudioSession.instance;
     await session.configure(const AudioSessionConfiguration(
       avAudioSessionCategory: AVAudioSessionCategory.playback,
-      avAudioSessionCategoryOptions: AVAudioSessionCategoryOptions.mixWithOthers,
-      avAudioSessionMode: AVAudioSessionMode.spokenAudio,
+      avAudioSessionMode: AVAudioSessionMode.defaultMode,
     ));
     // Đăng ký mixer làm chủ notification khi bắt đầu phát
     _handler.onPlayRequested = playAll;
@@ -145,12 +186,17 @@ class MixerController extends GetxController {
 
 class MixerTrack {
   MixerTrack({
-    required this.sound,
+    this.sound,
+    this.localTrack,
     required this.player,
     required this.volume,
-  });
+  }) : assert(sound != null || localTrack != null);
 
-  final SoundModel sound;
+  final SoundModel? sound;
+  final LocalTrackModel? localTrack;
   final AudioPlayer player;
   final RxDouble volume;
+
+  String get title => sound?.title ?? localTrack!.title;
+  String get categoryId => sound?.categoryId ?? 'local';
 }

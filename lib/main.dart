@@ -34,8 +34,10 @@ void main() async {
   Get.put<HiveProvider>(hiveProvider, permanent: true);
 
   // Khởi tạo IAP service – đọc cache offline, lắng nghe purchaseStream
+  // DEV_MODE=true khi chạy với --dart-define=DEV_MODE=true (dev run config)
+  const bool kDevMode = bool.fromEnvironment('DEV_MODE', defaultValue: false);
   final iapService = IAPService();
-  await iapService.init();
+  await iapService.init(devMode: kDevMode);
   Get.put<IAPService>(iapService, permanent: true);
 
   SystemChrome.setPreferredOrientations([

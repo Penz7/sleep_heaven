@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import '../constants/app_colors.dart';
+import 'package:get/get.dart';
 
-/// Card hiển thị một sound - icon, tên, lock nếu premium, trạng thái playing, favorite
+import '../constants/app_colors.dart';
+import '../../data/repositories/sound_repository.dart';
+
+/// Card hiển thị một sound - icon, tên, lock nếu premium chưa mua, trạng thái playing, favorite
 class SoundCard extends StatelessWidget {
   const SoundCard({
     super.key,
@@ -26,9 +29,12 @@ class SoundCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: InkWell(
-        onTap: isPremium ? onPremiumTap : onTap,
+    return Obx(() {
+      final repo = Get.find<SoundRepository>();
+      final isLocked = isPremium && !repo.isPremium;
+      return Card(
+        child: InkWell(
+          onTap: isLocked ? onPremiumTap : onTap,
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -54,7 +60,7 @@ class SoundCard extends StatelessWidget {
                     ),
                     child: Icon(icon, size: 28, color: AppColors.primaryStart),
                   ),
-                  if (isPremium)
+                  if (isLocked)
                     Positioned(
                       top: 0,
                       right: 0,
@@ -111,5 +117,6 @@ class SoundCard extends StatelessWidget {
         ),
       ),
     );
+    });
   }
 }

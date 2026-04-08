@@ -14,7 +14,9 @@ const String _premiumStorageKey = 'premium_unlocked';
 
 /// Service quản lý IAP non-consumable – singleton, sống suốt vòng đời app
 class IAPService extends GetxService {
-  final InAppPurchase _iap = InAppPurchase.instance;
+  /// Lazy: `InAppPurchase.instance` touches platform; defer until non-dev init paths.
+  InAppPurchase get _iap => InAppPurchase.instance;
+
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   StreamSubscription<List<PurchaseDetails>>? _purchaseSubscription;
@@ -22,8 +24,21 @@ class IAPService extends GetxService {
   /// Trạng thái premium reactive – đọc sync từ mọi controller
   final RxBool isPremium = false.obs;
 
+  /// Chế độ dev – bỏ qua store, force-unlock premium ngay khi khởi động
+  bool _devMode = false;
+  bool get isDevMode => _devMode;
+
   /// Khởi tạo service – gọi trong main.dart trước runApp
-  Future<IAPService> init() async {
+  /// Truyền [devMode] = true để unlock premium tự động (chỉ dùng khi debug)
+  Future<IAPService> init({bool devMode = false}) async {
+    _devMode = devMode;
+
+    if (devMode) {
+      isPremium.value = true;
+      debugPrint('[IAPService] DEV MODE – Premium force-unlocked');
+      return this;
+    }
+
     // Đọc cache từ secure storage trước – cho phép offline unlock
     final cached = await _storage.read(key: _premiumStorageKey);
     isPremium.value = cached == 'true';
@@ -73,7 +88,7 @@ class IAPService extends GetxService {
   Future<void> buyPremium() async {
     final product = await getPremiumProduct();
     if (product == null) {
-      throw Exception('Không tìm thấy sản phẩm premium trên store.');
+      throw Exception('Premium product not found in the store.');
     }
     await _iap.buyNonConsumable(
       purchaseParam: PurchaseParam(productDetails: product),
@@ -85,7 +100,7 @@ class IAPService extends GetxService {
   Future<void> restorePurchases() async {
     final available = await _iap.isAvailable();
     if (!available) {
-      throw Exception('Store không khả dụng. Vui lòng kiểm tra kết nối mạng.');
+      throw Exception('Store is not available. Please check your connection.');
     }
     await _iap.restorePurchases();
     // Kết quả được xử lý bất đồng bộ qua _onPurchaseUpdate

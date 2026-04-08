@@ -15,14 +15,6 @@
 }
 
 # ============================================================
-# Google Mobile Ads / AdMob (google_mobile_ads)
-# ============================================================
--keep class com.google.android.gms.ads.** { *; }
--keep class com.google.ads.** { *; }
--keep class com.google.android.gms.internal.ads.** { *; }
--dontwarn com.google.android.gms.ads.**
-
-# ============================================================
 # Google Play Services chung
 # ============================================================
 -keep class com.google.android.gms.common.** { *; }

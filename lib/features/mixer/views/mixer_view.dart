@@ -6,6 +6,9 @@ import 'package:get/get.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../data/repositories/sound_repository.dart';
+import '../../../routes/app_routes.dart';
+import '../../local_music/controllers/local_music_controller.dart';
+import '../../local_music/views/local_music_sheet.dart';
 import '../controllers/mixer_controller.dart';
 
 class MixerView extends GetView<MixerController> {
@@ -51,51 +54,143 @@ class MixerView extends GetView<MixerController> {
   }
 
   void _showAddSoundSheet(BuildContext context) {
+    Get.bottomSheet(
+      _AddSoundSheet(
+        controller: controller,
+      ),
+    );
+  }
+}
+
+class _AddSoundSheet extends StatefulWidget {
+  const _AddSoundSheet({required this.controller});
+
+  final MixerController controller;
+
+  @override
+  State<_AddSoundSheet> createState() => _AddSoundSheetState();
+}
+
+class _AddSoundSheetState extends State<_AddSoundSheet> {
+  int _selectedTab = 0;
+
+  @override
+  Widget build(BuildContext context) {
     final repo = Get.find<SoundRepository>();
     final sounds = repo.getAllSounds();
-    Get.bottomSheet(
-      Container(
-        height: 400,
-        decoration: const BoxDecoration(
-          color: AppColors.cardDark,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                'Add sound to mix',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
+    final localMusicCtrl = Get.find<LocalMusicController>();
+
+    return Container(
+      height: 450,
+      decoration: const BoxDecoration(
+        color: AppColors.cardDark,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              'Add sound to mix',
+              style: Theme.of(context).textTheme.titleLarge,
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: sounds.length,
-                itemBuilder: (context, index) {
-                  final sound = sounds[index];
-                  final alreadyAdded = controller.tracks.containsKey(sound.id);
-                  final isLocked =
-                      sound.isPremium && !repo.isPremium && !alreadyAdded;
-                  return ListTile(
-                    title: Text(sound.title),
-                    trailing: alreadyAdded
-                        ? const Icon(Icons.check)
-                        : IconButton(
-                            icon: Icon(
-                              isLocked ? Icons.lock : Icons.add,
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: TextButton(
+                  onPressed: () => setState(() => _selectedTab = 0),
+                  child: Text(
+                    'Default',
+                    style: TextStyle(
+                      color: _selectedTab == 0 ? AppColors.accent : null,
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Obx(
+                  () {
+                    final isPremium = localMusicCtrl.isPremium;
+                    return TextButton(
+                      onPressed: () {
+                        if (!isPremium) {
+                          Get.back();
+                          Get.toNamed(Routes.premium);
+                        } else {
+                          setState(() => _selectedTab = 1);
+                        }
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (!isPremium) ...[
+                            const Icon(Icons.lock, size: 16),
+                            const SizedBox(width: 4),
+                          ],
+                          Text(
+                            'From Device',
+                            style: TextStyle(
+                              color: _selectedTab == 1 ? AppColors.accent : null,
                             ),
-                            onPressed: () {
-                              Get.back();
-                              controller.addTrack(sound);
-                            },
                           ),
-                  );
-                },
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
+          Expanded(
+            child: _selectedTab == 0
+                ? Obx(
+                    () {
+                      final isPremium = repo.isPremium;
+                      return ListView.builder(
+                        itemCount: sounds.length,
+                        itemBuilder: (context, index) {
+                          final sound = sounds[index];
+                          final alreadyAdded =
+                              widget.controller.tracks.containsKey(sound.id);
+                          final isLocked = sound.isPremium &&
+                              !isPremium &&
+                              !alreadyAdded;
+                          return ListTile(
+                            title: Text(sound.title),
+                            trailing: alreadyAdded
+                                ? const Icon(Icons.check)
+                                : IconButton(
+                                    icon: Icon(
+                                      isLocked ? Icons.lock : Icons.add,
+                                    ),
+                                    onPressed: () {
+                                      Get.back();
+                                      widget.controller.addTrack(sound);
+                                    },
+                                  ),
+                          );
+                        },
+                      );
+                    },
+                  )
+                : Obx(
+                    () {
+                      if (!localMusicCtrl.isPremium) {
+                        return const Center(
+                          child: Text('Premium is required to add music from your device'),
+                        );
+                      }
+                      return LocalMusicSheet(
+                        onTrackSelected: (track) {
+                          Get.back();
+                          widget.controller.addLocalTrack(track);
+                        },
+                      );
+                    },
+                  ),
+          ),
+        ],
       ),
     );
   }
@@ -156,9 +251,11 @@ class ActiveSoundsList extends GetView<MixerController> {
             children: [
               Icon(Icons.tune, size: 64, color: Colors.white38),
               const SizedBox(height: 16),
-              Text(
-                'Add up to 3 sounds to mix',
-                style: TextStyle(color: Colors.white70),
+              Obx(
+                () => Text(
+                  'Add up to ${controller.maxTracks} sounds to mix',
+                  style: TextStyle(color: Colors.white70),
+                ),
               ),
             ],
           ),
@@ -225,8 +322,8 @@ class _MixerTrackCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = track.sound.title;
-    final category = track.sound.categoryId;
+    final title = track.title;
+    final category = track.categoryId;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -239,42 +336,46 @@ class _MixerTrackCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: AppColors.accent.opacityColor(0.18),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Icon(
-                        _iconForCategory(category),
-                        color: AppColors.accent,
-                        size: 28,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w600),
+                Expanded(
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: AppColors.accent.opacityColor(0.18),
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          category,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Colors.white54,
-                              ),
+                        child: Icon(
+                          _iconForCategory(category),
+                          color: AppColors.accent,
+                          size: 28,
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              title,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.w600),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              category,
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Colors.white54,
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 IconButton(
                   onPressed: onRemove,

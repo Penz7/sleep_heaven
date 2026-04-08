@@ -1,30 +1,70 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:sleep_heaven/main.dart';
+import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:sleep_heaven/core/bindings/app_binding.dart';
+import 'package:sleep_heaven/core/services/iap_service.dart';
+import 'package:sleep_heaven/data/providers/hive_provider.dart';
+import 'package:sleep_heaven/data/repositories/sound_repository.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  late Directory tempDocsDir;
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  setUpAll(() async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    tempDocsDir = Directory.systemTemp.createTempSync('sleep_heaven_hive_test');
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+    const MethodChannel pathProviderChannel =
+        MethodChannel('plugins.flutter.io/path_provider');
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(pathProviderChannel, (MethodCall call) async {
+      if (call.method == 'getApplicationDocumentsDirectory') {
+        return tempDocsDir.path;
+      }
+      return null;
+    });
+  });
+
+  tearDownAll(() {
+    const MethodChannel pathProviderChannel =
+        MethodChannel('plugins.flutter.io/path_provider');
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(pathProviderChannel, null);
+    if (tempDocsDir.existsSync()) {
+      tempDocsDir.deleteSync(recursive: true);
+    }
+  });
+
+  setUp(() async {
+    await Hive.initFlutter();
+    final HiveProvider hiveProvider = HiveProvider();
+    await hiveProvider.init();
+    Get.put<HiveProvider>(hiveProvider, permanent: true);
+    final IAPService iapService = IAPService();
+    await iapService.init(devMode: true);
+    Get.put<IAPService>(iapService, permanent: true);
+  });
+
+  tearDown(() async {
+    Get.reset();
+    await Hive.close();
+  });
+
+  testWidgets('AppBinding resolves after main-style Get.put bootstrap', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      GetMaterialApp(
+        initialBinding: AppBinding(),
+        home: const Scaffold(
+          body: Center(child: Text('smoke')),
+        ),
+      ),
+    );
     await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('smoke'), findsOneWidget);
+    expect(Get.isRegistered<SoundRepository>(), isTrue);
+    expect(Get.find<SoundRepository>(), isNotNull);
   });
 }

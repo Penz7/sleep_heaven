@@ -9,14 +9,22 @@ class SleepAudioHandler extends BaseAudioHandler {
 
   String? _originalArtist;
 
-  /// Cập nhật metadata hiển thị trên notification/lock screen
-  void setNowPlaying({required String id, required String title, required String artist}) {
+  /// Cập nhật metadata hiển thị trên notification/lock screen.
+  /// [duration] cần thiết để iOS hiển thị thanh tiến trình trên Lock Screen / Control Center.
+  void setNowPlaying({
+    required String id,
+    required String title,
+    required String artist,
+    Duration? duration,
+  }) {
     _originalArtist = artist;
-    mediaItem.add(MediaItem(id: id, title: title, artist: artist));
+    mediaItem.add(MediaItem(id: id, title: title, artist: artist, duration: duration));
   }
 
-  /// Cập nhật trạng thái play/pause trên notification
-  void setPlaybackState({required bool playing}) {
+  /// Cập nhật trạng thái play/pause trên notification.
+  /// [position] cần thiết để iOS biết vị trí phát hiện tại — iOS sẽ tự tính toán
+  /// thời gian trôi qua dựa trên position + updateTime mà không cần update mỗi giây.
+  void setPlaybackState({required bool playing, Duration position = Duration.zero}) {
     playbackState.add(PlaybackState(
       controls: [
         if (playing) MediaControl.pause else MediaControl.play,
@@ -25,6 +33,7 @@ class SleepAudioHandler extends BaseAudioHandler {
       androidCompactActionIndices: const [0],
       processingState: AudioProcessingState.ready,
       playing: playing,
+      updatePosition: position,
     ));
   }
 
@@ -35,6 +44,25 @@ class SleepAudioHandler extends BaseAudioHandler {
     // Dùng artist field - hiển thị đáng tin cậy trên cả Android notification và iOS lock screen
     mediaItem.add(current.copyWith(
       artist: '⏱ ${_formatRemaining(remaining)} remaining',
+    ));
+  }
+
+  /// Đặt duration của MediaItem thành timer duration để progress bar trên lock screen
+  /// hiển thị tiến trình sleep timer thay vì audio file (thường chỉ vài chục giây).
+  void setTimerDuration(Duration timerDuration) {
+    final current = mediaItem.value;
+    if (current == null) return;
+    mediaItem.add(current.copyWith(duration: timerDuration));
+  }
+
+  /// Xóa timer và khôi phục trạng thái ban đầu: artist gốc + audio file duration.
+  /// Gọi khi timer kết thúc hoặc user tắt timer.
+  void clearTimer(Duration? audioDuration) {
+    final current = mediaItem.value;
+    if (current == null) return;
+    mediaItem.add(current.copyWith(
+      artist: _originalArtist ?? 'Sleep Heaven',
+      duration: audioDuration,
     ));
   }
 

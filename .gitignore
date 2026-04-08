@@ -50,6 +50,10 @@ captures/
 # Keystore files
 # Uncomment the following line if you do not want to check your keystore files in.
 #*.jks
+*.jks
+*.keystore
+*.p12
+*.pem
 
 # External native build folder generated in Android Studio 2.2 and later
 .externalNativeBuild
@@ -259,3 +263,22 @@ android/build/reports/problems/problems-report.html
 
 .fvm
 .idea
+
+# Secret files and local signing inputs
+android/key.properties
+android/key.properties.local
+android/*.key.properties
+android/keystore.properties
+android/*.keystore.properties
+android/**/secrets.properties
+*.env
+*.env.*
+!.env.example
+*.secret
+*.secrets
+
+# Local keystore locations
+android/keystore/
+android/keys/
+**/keystore.jks
+**/*upload*.jks

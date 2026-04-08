@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../data/repositories/sound_repository.dart';
 import '../../../routes/app_routes.dart';
 import '../controllers/library_controller.dart';
 
@@ -85,7 +86,7 @@ class _LibraryContent extends StatelessWidget {
         builder: (c) => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 96),
+            const SizedBox(height: 120),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -105,35 +106,44 @@ class _LibraryContent extends StatelessWidget {
                 duration: const Duration(milliseconds: 400),
                 switchInCurve: Curves.easeOutCubic,
                 switchOutCurve: Curves.easeInCubic,
-                child: GridView.builder(
+                child: Obx(
                   key: ValueKey(c.selectedTabIndex),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 12,
-                  ),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 1,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                  ),
-                  itemCount: c.sounds.length,
-                  itemBuilder: (context, index) {
-                    final sound = c.sounds[index];
-                    return _AnimatedSoundCard(
-                      index: index,
-                      child: _BubbleSoundCard(
-                        title: sound.title,
-                        icon: _getIconForCategory(sound.categoryId),
-                        isPremium: sound.isPremium,
-                        isFavorite: c.isFavorite(sound.id),
-                        onFavoriteTap: () => c.toggleFavorite(sound.id),
-                        onPremiumTap: () => Get.toNamed(Routes.premium),
-                        onTap: () =>
-                            Get.toNamed(Routes.player, arguments: sound),
-                      ),
-                    );
-                  },
+                  () {
+                  final repo = Get.find<SoundRepository>();
+                  final isPremium = repo.isPremium;
+                  return GridView.builder(
+                    key: ValueKey(c.selectedTabIndex),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 1,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                    ),
+                    itemCount: c.sounds.length,
+                    itemBuilder: (context, index) {
+                      final sound = c.sounds[index];
+                      final isLocked =
+                          sound.isPremium && !isPremium;
+                      return _AnimatedSoundCard(
+                        index: index,
+                        child: _BubbleSoundCard(
+                          title: sound.title,
+                          icon: _getIconForCategory(sound.categoryId),
+                          isLocked: isLocked,
+                          isFavorite: c.isFavorite(sound.id),
+                          onFavoriteTap: () => c.toggleFavorite(sound.id),
+                          onPremiumTap: () => Get.toNamed(Routes.premium),
+                          onTap: () =>
+                              Get.toNamed(Routes.player, arguments: sound),
+                        ),
+                      );
+                    },
+                  );
+                },
                 ),
               ),
             ),
@@ -177,8 +187,8 @@ class _LibraryContent extends StatelessWidget {
         return Icons.cloudy_snowing;
       case 'white_noise':
         return Icons.graphic_eq;
-      case 'baby':
-        return Icons.child_care;
+      case 'music_box':
+        return Icons.piano;
       case 'nature':
         return Icons.forest_sharp;
       default:
@@ -194,7 +204,7 @@ class _BubbleSoundCard extends StatelessWidget {
     required this.onTap,
     this.onFavoriteTap,
     this.onPremiumTap,
-    this.isPremium = false,
+    this.isLocked = false,
     this.isFavorite = false,
   });
 
@@ -203,20 +213,20 @@ class _BubbleSoundCard extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback? onFavoriteTap;
   final VoidCallback? onPremiumTap;
-  final bool isPremium;
+  final bool isLocked;
   final bool isFavorite;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: isPremium ? (onPremiumTap ?? onTap) : onTap,
+      onTap: isLocked ? (onPremiumTap ?? onTap) : onTap,
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(40),
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: isPremium ? [
+            colors: isLocked ? [
               AppColors.backgroundDark.opacityColor(0.35),
               AppColors.cardDark.opacityColor(0.5),
             ] : [
@@ -255,18 +265,17 @@ class _BubbleSoundCard extends StatelessWidget {
                     ),
                     child: Icon(icon, color: Colors.white, size: 24),
                   ),
-                  // Thêm param mới
                   if (onFavoriteTap != null)
                     GestureDetector(
-                      onTap: isPremium ? null : onFavoriteTap,
+                      onTap: isLocked ? null : onFavoriteTap,
                       behavior: HitTestBehavior.opaque,
                       child: Padding(
                         padding: const EdgeInsets.all(8),
                         child: AnimatedScale(
                           duration: const Duration(milliseconds: 280),
                           curve: Curves.elasticOut,
-                          scale: (isPremium) || isFavorite ? 1.2 : 1.0,
-                          child: isPremium
+                          scale: isLocked || isFavorite ? 1.2 : 1.0,
+                          child: isLocked
                               ? Icon(
                                   Icons.lock,
                                   color: Colors.amber[300],
