@@ -1,3 +1,4 @@
+@Tags(<String>['fast'])
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -113,5 +114,5 @@ void main() {
     expect(find.text('smoke'), findsOneWidget);
     expect(Get.isRegistered<SoundRepository>(), isTrue);
     expect(Get.find<SoundRepository>(), isNotNull);
-  });
+  }, timeout: const Timeout(Duration(seconds: 10)));
 }

@@ -1,3 +1,4 @@
+@Tags(<String>['fast'])
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sleep_heaven/core/services/audio_handler.dart';
 
@@ -19,7 +20,7 @@ void main() {
     expect(handler.isOwnerActive('player', token), isTrue);
     expect(playCalls, equals(1));
     expect(pauseCalls, equals(1));
-  });
+  }, timeout: const Timeout(Duration(seconds: 5)));
 
   test('mixer takeover invalidates prior player callback routing', () async {
     final SleepAudioHandler handler = SleepAudioHandler();
@@ -43,7 +44,7 @@ void main() {
 
     expect(playerCalls, equals(0));
     expect(mixerCalls, equals(2));
-  });
+  }, timeout: const Timeout(Duration(seconds: 5)));
 
   test('release transitions keep lock-screen callback ownership unambiguous', () async {
     final SleepAudioHandler handler = SleepAudioHandler();
@@ -59,5 +60,5 @@ void main() {
 
     expect(handler.isOwnerActive('mixer', token), isFalse);
     expect(mixerPauseCalls, equals(0));
-  });
+  }, timeout: const Timeout(Duration(seconds: 5)));
 }

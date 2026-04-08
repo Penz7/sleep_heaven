@@ -1,3 +1,4 @@
+@Tags(<String>['fast'])
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -68,7 +69,7 @@ void main() {
       );
       await service.applyReliabilityState(IapReliabilityState.notPurchased);
       expect(service.isPremium.value, isFalse);
-    });
+    }, timeout: const Timeout(Duration(seconds: 5)));
 
     test('purchased sets entitlement true and persists cache', () async {
       final _FakeStore store = _FakeStore();
@@ -82,7 +83,7 @@ void main() {
       await service.applyReliabilityState(IapReliabilityState.purchased);
       expect(service.isPremium.value, isTrue);
       expect(store.values['premium_unlocked'], equals('true'));
-    });
+    }, timeout: const Timeout(Duration(seconds: 5)));
 
     test('restored remains idempotent across duplicate events', () async {
       final IAPService service = IAPService(
@@ -95,7 +96,7 @@ void main() {
       await service.applyReliabilityState(IapReliabilityState.restored);
       await service.applyReliabilityState(IapReliabilityState.restored);
       expect(service.isPremium.value, isTrue);
-    });
+    }, timeout: const Timeout(Duration(seconds: 5)));
 
     test('failed keeps safe state and emits recoverable signal', () async {
       final IAPService service = IAPService(
@@ -108,7 +109,7 @@ void main() {
       await service.applyReliabilityState(IapReliabilityState.failed);
       expect(service.isPremium.value, isFalse);
       expect(service.lastRecoverableErrorCode.value, equals('IAP_FAILED'));
-    });
+    }, timeout: const Timeout(Duration(seconds: 5)));
 
     test('offline_restore marks pending reconciliation', () async {
       final IAPService service = IAPService(
@@ -121,6 +122,6 @@ void main() {
       await service.applyReliabilityState(IapReliabilityState.offlineRestore);
       expect(service.isPremium.value, isFalse);
       expect(service.hasPendingReconciliation.value, isTrue);
-    });
+    }, timeout: const Timeout(Duration(seconds: 5)));
   });
 }

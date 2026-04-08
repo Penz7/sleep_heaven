@@ -1,3 +1,4 @@
+@Tags(<String>['critical-smoke'])
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -69,7 +70,7 @@ void main() {
     expect(service.isPremium.value, isFalse);
     expect(service.hasPendingReconciliation.value, isTrue);
     expect(storeClient.restoreCalls, equals(0));
-  });
+  }, timeout: const Timeout(Duration(seconds: 10)));
 
   test('online transition replays restore and reconciles pending state', () async {
     final _FakeStoreClient storeClient = _FakeStoreClient();
@@ -87,7 +88,7 @@ void main() {
 
     expect(service.hasPendingReconciliation.value, isFalse);
     expect(storeClient.restoreCalls, equals(1));
-  });
+  }, timeout: const Timeout(Duration(seconds: 10)));
 
   test('repeated startup restore is idempotent with singleton service', () async {
     final _FakeStoreClient storeClient = _FakeStoreClient();
@@ -104,5 +105,5 @@ void main() {
 
     expect(storeClient.restoreCalls, equals(2));
     expect(service.hasPendingReconciliation.value, isFalse);
-  });
+  }, timeout: const Timeout(Duration(seconds: 10)));
 }

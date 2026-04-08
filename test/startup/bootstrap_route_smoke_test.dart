@@ -1,3 +1,4 @@
+@Tags(<String>['critical-smoke'])
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sleep_heaven/app/bootstrap/degraded_boot_notice.dart';
@@ -34,7 +35,7 @@ void main() {
     await tester.pumpWidget(_buildApp(const StartupResult.ok()));
     expect(find.text('App Booted'), findsOneWidget);
     expect(find.byType(DegradedBootNotice), findsNothing);
-  });
+  }, timeout: const Timeout(Duration(seconds: 10)));
 
   testWidgets('degraded boot renders safe notice', (WidgetTester tester) async {
     await tester.pumpWidget(
@@ -43,7 +44,7 @@ void main() {
     expect(find.text('App Booted'), findsOneWidget);
     expect(find.byType(DegradedBootNotice), findsOneWidget);
     expect(find.text('IAP service degraded.'), findsOneWidget);
-  });
+  }, timeout: const Timeout(Duration(seconds: 10)));
 
   testWidgets('fatal boot blocks normal app content', (WidgetTester tester) async {
     await tester.pumpWidget(
@@ -51,5 +52,5 @@ void main() {
     );
     expect(find.text('Storage bootstrap failed.'), findsOneWidget);
     expect(find.text('App Booted'), findsNothing);
-  });
+  }, timeout: const Timeout(Duration(seconds: 10)));
 }
