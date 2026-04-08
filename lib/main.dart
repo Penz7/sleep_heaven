@@ -1,44 +1,118 @@
 import 'package:audio_service/audio_service.dart';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'app/bootstrap/degraded_boot_notice.dart';
 import 'core/bindings/app_binding.dart';
 import 'core/constants/app_colors.dart';
 import 'core/constants/app_strings.dart';
+import 'core/errors/domain_error.dart';
+import 'core/observability/telemetry_config.dart';
+import 'core/observability/telemetry_provider.dart';
+import 'core/observability/telemetry_service.dart';
 import 'core/services/audio_handler.dart';
 import 'core/services/iap_service.dart';
+import 'core/startup/startup_coordinator.dart';
+import 'core/startup/startup_result.dart';
 import 'core/themes/app_theme.dart';
 import 'data/providers/hive_provider.dart';
 import 'routes/app_pages.dart';
 import 'routes/app_routes.dart';
 
+class BootState extends GetxService {
+  BootState({required this.result});
+  final StartupResult result;
+}
+
+void configureGlobalErrorHandlers(TelemetryService telemetryService) {
+  FlutterError.onError = (FlutterErrorDetails details) {
+    telemetryService.capture(
+      DomainError(
+        domain: DomainErrorDomain.startup,
+        severity: DomainErrorSeverity.fatal,
+        code: 'FLUTTER_ERROR',
+        message: 'Unhandled Flutter framework error.',
+        cause: details.exception,
+        stackTrace: details.stack,
+      ),
+    );
+  };
+  PlatformDispatcher.instance.onError = (Object error, StackTrace stackTrace) {
+    telemetryService.capture(
+      DomainError(
+        domain: DomainErrorDomain.startup,
+        severity: DomainErrorSeverity.fatal,
+        code: 'PLATFORM_ERROR',
+        message: 'Unhandled platform error.',
+        cause: error,
+        stackTrace: stackTrace,
+      ),
+    );
+    return true;
+  };
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final handler = await AudioService.init(
-    builder: () => SleepAudioHandler(),
-    config: const AudioServiceConfig(
-      androidNotificationChannelId: 'dat.c.sleepheaven.audio',
-      androidNotificationChannelName: 'Sleep Heaven',
-      androidNotificationOngoing: true,
-      androidStopForegroundOnPause: true,
-      notificationColor: AppColors.backgroundDark,
-    ),
+  final TelemetryService telemetryService = TelemetryService(
+    provider: const SentryTelemetryProvider(),
+    config: TelemetryConfig.fromEnvironment(),
   );
-  Get.put<SleepAudioHandler>(handler, permanent: true);
+  configureGlobalErrorHandlers(telemetryService);
+  Get.put<TelemetryService>(telemetryService, permanent: true);
 
-  // Khởi tạo Hive trước khi chạy app
-  final hiveProvider = HiveProvider();
-  await hiveProvider.init();
-  Get.put<HiveProvider>(hiveProvider, permanent: true);
-
-  // Khởi tạo IAP service – đọc cache offline, lắng nghe purchaseStream
-  // DEV_MODE=true khi chạy với --dart-define=DEV_MODE=true (dev run config)
-  const bool kDevMode = bool.fromEnvironment('DEV_MODE', defaultValue: false);
-  final iapService = IAPService();
-  await iapService.init(devMode: kDevMode);
-  Get.put<IAPService>(iapService, permanent: true);
+  final StartupCoordinator coordinator = StartupCoordinator(
+    telemetryService: telemetryService,
+    steps: <StartupStepConfig>[
+      StartupStepConfig(
+        name: 'audio_handler',
+        domain: DomainErrorDomain.audio,
+        isCritical: true,
+        action: () async {
+          final SleepAudioHandler handler = await AudioService.init(
+            builder: () => SleepAudioHandler(),
+            config: const AudioServiceConfig(
+              androidNotificationChannelId: 'dat.c.sleepheaven.audio',
+              androidNotificationChannelName: 'Sleep Heaven',
+              androidNotificationOngoing: true,
+              androidStopForegroundOnPause: true,
+              notificationColor: AppColors.backgroundDark,
+            ),
+          );
+          Get.put<SleepAudioHandler>(handler, permanent: true);
+        },
+      ),
+      StartupStepConfig(
+        name: 'storage',
+        domain: DomainErrorDomain.storage,
+        isCritical: true,
+        action: () async {
+          final HiveProvider hiveProvider = HiveProvider();
+          await hiveProvider.init();
+          Get.put<HiveProvider>(hiveProvider, permanent: true);
+        },
+      ),
+      StartupStepConfig(
+        name: 'iap',
+        domain: DomainErrorDomain.iap,
+        isCritical: false,
+        action: () async {
+          const bool kDevMode = bool.fromEnvironment(
+            'DEV_MODE',
+            defaultValue: false,
+          );
+          final IAPService iapService = IAPService();
+          await iapService.init(devMode: kDevMode);
+          Get.put<IAPService>(iapService, permanent: true);
+        },
+      ),
+    ],
+  );
+  final StartupResult startupResult = await coordinator.run();
+  Get.put<BootState>(BootState(result: startupResult), permanent: true);
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -55,19 +129,49 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final BootState bootState = Get.find<BootState>();
+    if (bootState.result.isFatal) {
+      return MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: Text(bootState.result.message ?? 'Startup failed.'),
+          ),
+        ),
+      );
+    }
     return ScreenUtilInit(
       designSize: const Size(375, 812),
       minTextAdapt: true,
       splitScreenMode: true,
-      builder: (_, child) => GetMaterialApp(
-        title: '${AppStrings.appName} - ${AppStrings.appSubtitle}',
-        initialBinding: AppBinding(),
-        theme: AppTheme.light,
-        darkTheme: AppTheme.dark,
-        themeMode: ThemeMode.dark,
-        getPages: AppPages.pages,
-        initialRoute: _getInitialRoute(),
-      ),
+      builder: (_, child) {
+        final GetMaterialApp app = GetMaterialApp(
+          title: '${AppStrings.appName} - ${AppStrings.appSubtitle}',
+          initialBinding: AppBinding(),
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
+          themeMode: ThemeMode.dark,
+          getPages: AppPages.pages,
+          initialRoute: _getInitialRoute(),
+          builder: (BuildContext context, Widget? routedChild) {
+            final Widget body = routedChild ?? const SizedBox.shrink();
+            if (!bootState.result.isDegraded) {
+              return body;
+            }
+            return Stack(
+              children: <Widget>[
+                body,
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: DegradedBootNotice(
+                    message: bootState.result.message ?? 'Some services degraded.',
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+        return app;
+      },
     );
   }
 
