@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 allprojects {
     repositories {
         google()
@@ -18,6 +21,17 @@ subprojects {
 
 subprojects {
     project.evaluationDependsOn(":app")
+}
+
+subprojects {
+    tasks.withType<KotlinCompile>().configureEach {
+        compilerOptions {
+            // sentry_flutter profile variant still requests Kotlin 1.6 in some setups.
+            // Force a supported language/api level across all Android subprojects.
+            languageVersion.set(KotlinVersion.KOTLIN_1_8)
+            apiVersion.set(KotlinVersion.KOTLIN_1_8)
+        }
+    }
 }
 
 tasks.register<Delete>("clean") {
