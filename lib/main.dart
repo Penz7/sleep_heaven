@@ -10,7 +10,6 @@ import 'core/bindings/app_binding.dart';
 import 'core/constants/app_colors.dart';
 import 'core/constants/app_strings.dart';
 import 'core/config/feature_flag_service.dart';
-import 'core/config/feature_flags.dart';
 import 'core/errors/domain_error.dart';
 import 'core/observability/telemetry_config.dart';
 import 'core/observability/telemetry_provider.dart';
