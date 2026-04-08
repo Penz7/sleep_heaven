@@ -6,11 +6,11 @@
 - **Current focus**: Phase 3 - Performance and Architecture Refactor
 
 ## Current Position
-- **Current phase**: 2
-- **Current plan**: 03 completed
-- **Status**: Phase 2 complete (Plans 01-03 executed)
-- **Progress**: 40%
-- **Immediate next milestone**: Begin Phase 3 performance and architecture refactor execution
+- **Current phase**: 3
+- **Current plan**: 04 completed
+- **Status**: Phase 3 complete (Plans 01-04 executed)
+- **Progress**: 60%
+- **Immediate next milestone**: Resolve profile-build blocker, then begin next roadmap phase
 
 ## Performance Metrics Baseline
 - **Automated test maturity**: Baseline (signing contract + GetX/Hive/IAP bootstrap smoke)
@@ -37,7 +37,7 @@
 - Playback UI jank risk remains until Phase 3 list/layer profiling work
 
 ### Open Blockers
-- None for Phase 2 execution scope
+- Profile-mode Android build blocked by `:sentry_flutter:compileProfileKotlin` (Kotlin language version 1.6 unsupported in current toolchain)
 
 ## Session Continuity
 - **Last completed artifact**: `.planning/phases/02-reliability-and-observability-baseline/02-03-SUMMARY.md`
@@ -54,3 +54,6 @@
 - Lock telemetry provider behind `TelemetryProvider` and route all startup/service failures through `DomainError`.
 - Keep `IAPService` singleton contract intact while enforcing deterministic five-state and reconciliation behavior.
 - Enforce single-owner latest-wins callback ownership contract in `SleepAudioHandler` and dependent controllers.
+- Adopt `ListView.builder` with stable `ValueKey(soundId)` for mixer active list to reduce eager rendering overhead while preserving UI parity.
+- Split `mixer_view.dart` into section modules (header, active sounds, bottom actions) without changing `MixerController` contracts.
+- Externalize sound catalog to `assets/catalog/sound_catalog.v1.json` with schema validation and CI contract tests.

@@ -76,6 +76,7 @@ Plans:
 
 ### Phase 3: Performance and Architecture Refactor
 **Goal**: UI interactions stay smooth under realistic usage while reducing change-risk in large feature files.
+**Requirements**: [P3-01, P3-02, P3-03, P3-04]
 **Depends on**: Phase 2
 **Estimated scope**: Large (8-12 engineering days)
 **Primary risks**:
@@ -95,7 +96,12 @@ Plans:
 - Profile run measurements captured for before/after on representative device.
 - Widget/integration parity checks for player, mixer, home, and library navigation.
 - Catalog schema validation test in CI.
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] `03-01-PLAN.md` - Migrate mixer active list to lazy rendering with stable keys and parity-first guards.
+- [ ] `03-02-PLAN.md` - Add adaptive blur degrade policy with profile-evidence thresholds and deterministic policy tests.
+- [ ] `03-03-PLAN.md` - Apply section-first mixer view split while preserving controller/service contract parity.
+- [ ] `03-04-PLAN.md` - Externalize sound catalog to schema-validated JSON with backward-compatible loader/cache and CI gate.
 **UI hint**: yes
 
 ### Phase 4: Test and CI Expansion
