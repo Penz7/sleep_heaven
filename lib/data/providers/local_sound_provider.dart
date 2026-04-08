@@ -1,9 +1,38 @@
+import 'dart:async';
+
+import '../catalog/catalog_cache.dart';
+import '../catalog/catalog_loader.dart';
 import '../models/sound_model.dart';
 
 /// Provider cung cấp danh sách sounds hardcode - 7 free + 14 premium
 class LocalSoundProvider {
+  static final CatalogLoader _catalogLoader = CatalogLoader();
+  static final CatalogCache _catalogCache = CatalogCache();
+  static Future<void>? _warmupFuture;
+
+  static void ensureCatalogWarmup() {
+    _warmupFuture ??= _tryWarmupCatalog();
+  }
+
+  static Future<void> _tryWarmupCatalog() async {
+    try {
+      final CatalogLoadResult result = await _catalogLoader.loadFromAssets();
+      _catalogCache.setSnapshot(version: result.version, sounds: result.sounds);
+    } catch (_) {
+      // Keep backward-compatible hardcoded fallback if catalog load fails.
+    }
+  }
+
   static List<SoundModel> getAllSounds() {
-    return [
+    ensureCatalogWarmup();
+    final List<SoundModel>? cached = _catalogCache.snapshot;
+    if (cached != null) {
+      return cached;
+    }
+    return _fallbackSounds;
+  }
+
+  static final List<SoundModel> _fallbackSounds = [
       // Rain - 2 free, 3 premium
       const SoundModel(
         id: 'rain_light',
@@ -176,8 +205,7 @@ class LocalSoundProvider {
         isPremium: true,
         imagePath: 'assets/images/nature/fireplace.png',
       ),
-    ];
-  }
+  ];
 
   static List<SoundModel> getSoundsByCategory(String categoryId) {
     return getAllSounds().where((s) => s.categoryId == categoryId).toList();

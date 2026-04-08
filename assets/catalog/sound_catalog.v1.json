@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "sounds": [
+    {"id":"rain_light","title":"Light Rain","categoryId":"rain","assetPath":"assets/sounds/rain/rain_light.mp3","imagePath":"assets/images/rain/rain_light.png","isPremium":false,"icon":"default"},
+    {"id":"rain_heavy","title":"Heavy Rain","categoryId":"rain","assetPath":"assets/sounds/rain/rain_heavy.mp3","imagePath":"assets/images/rain/rain_heavy.png","isPremium":false,"icon":"default"},
+    {"id":"rain_window","title":"Rain on Window","categoryId":"rain","assetPath":"assets/sounds/rain/rain_window.mp3","imagePath":"assets/images/rain/rain_window.png","isPremium":true,"icon":"default"},
+    {"id":"thunderstorm","title":"Thunderstorm","categoryId":"rain","assetPath":"assets/sounds/rain/thunderstorm.mp3","imagePath":"assets/images/rain/thunderstorm.png","isPremium":true,"icon":"default"},
+    {"id":"rain_forest","title":"Rain Forest","categoryId":"rain","assetPath":"assets/sounds/rain/rain_forest.mp3","imagePath":"assets/images/rain/rain_forest.png","isPremium":true,"icon":"default"},
+    {"id":"white_noise","title":"White Noise","categoryId":"white_noise","assetPath":"assets/sounds/white_noise/white_noise.mp3","imagePath":"assets/images/white_noise/white_noise.png","isPremium":false,"icon":"default"},
+    {"id":"brown_noise","title":"Brown Noise","categoryId":"white_noise","assetPath":"assets/sounds/white_noise/brown_noise.mp3","imagePath":"assets/images/white_noise/brown_noise.png","isPremium":false,"icon":"default"},
+    {"id":"fan","title":"Fan","categoryId":"white_noise","assetPath":"assets/sounds/white_noise/fan.mp3","imagePath":"assets/images/white_noise/fan.png","isPremium":true,"icon":"default"},
+    {"id":"pink_noise","title":"Pink Noise","categoryId":"white_noise","assetPath":"assets/sounds/white_noise/pink_noise.mp3","imagePath":"assets/images/white_noise/pink_noise.png","isPremium":true,"icon":"default"},
+    {"id":"air_conditioner","title":"Air Conditioner","categoryId":"white_noise","assetPath":"assets/sounds/white_noise/air_conditioner.mp3","imagePath":"assets/images/white_noise/air_conditioner.png","isPremium":true,"icon":"default"},
+    {"id":"music_box","title":"Music Box","categoryId":"music_box","assetPath":"assets/sounds/music_box/music_box.mp3","imagePath":"assets/images/music_box/music_box.png","isPremium":false,"icon":"default"},
+    {"id":"hair_dryer","title":"Hair Dryer","categoryId":"music_box","assetPath":"assets/sounds/music_box/hair_dryer.mp3","imagePath":"assets/images/music_box/music_box.png","isPremium":false,"icon":"default"},
+    {"id":"heartbeat","title":"Heartbeat","categoryId":"music_box","assetPath":"assets/sounds/music_box/heartbeat.mp3","imagePath":"assets/images/music_box/music_box.png","isPremium":true,"icon":"default"},
+    {"id":"shushing","title":"Shushing","categoryId":"music_box","assetPath":"assets/sounds/music_box/shushing.mp3","imagePath":"assets/images/music_box/music_box.png","isPremium":true,"icon":"default"},
+    {"id":"lullaby_piano","title":"Lullaby Piano","categoryId":"music_box","assetPath":"assets/sounds/music_box/lullaby_piano.mp3","imagePath":"assets/images/music_box/music_box.png","isPremium":true,"icon":"default"},
+    {"id":"cliderman","title":"Cliderman","categoryId":"music_box","assetPath":"assets/sounds/music_box/cliderman.mp3","imagePath":"assets/images/music_box/music_box.png","isPremium":true,"icon":"default"},
+    {"id":"ocean_waves","title":"Ocean Waves","categoryId":"nature","assetPath":"assets/sounds/nature/ocean_waves.mp3","imagePath":"assets/images/nature/ocean_waves.png","isPremium":false,"icon":"default"},
+    {"id":"forest_birds","title":"Forest Birds","categoryId":"nature","assetPath":"assets/sounds/nature/forest_birds.mp3","imagePath":"assets/images/nature/forest_bird.png","isPremium":true,"icon":"default"},
+    {"id":"river_stream","title":"River Stream","categoryId":"nature","assetPath":"assets/sounds/nature/river_stream.mp3","imagePath":"assets/images/nature/river_stream.png","isPremium":true,"icon":"default"},
+    {"id":"wind_gentle","title":"Gentle Wind","categoryId":"nature","assetPath":"assets/sounds/nature/wind_gentle.mp3","imagePath":"assets/images/nature/wind_gentle.png","isPremium":true,"icon":"default"},
+    {"id":"fireplace","title":"Fireplace","categoryId":"nature","assetPath":"assets/sounds/nature/fireplace.mp3","imagePath":"assets/images/nature/fireplace.png","isPremium":true,"icon":"default"}
+  ]
+}

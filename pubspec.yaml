@@ -48,6 +48,7 @@ dependencies:
   flutter_secure_storage: ^10.0.0
   connectivity_plus: ^7.0.0
   sentry_flutter: ^8.14.2
+  json_schema: ^5.2.2
 
 dev_dependencies:
   flutter_test:
@@ -70,6 +71,7 @@ flutter:
     - assets/images/white_noise/
     - assets/images/music_box/
     - assets/images/nature/
+    - assets/catalog/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

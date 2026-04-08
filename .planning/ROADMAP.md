@@ -10,7 +10,7 @@
 
 - [x] **Phase 1: Security and Release Hardening** - Eliminate secret-leak risk and harden release pipeline foundations.
 - [x] **Phase 2: Reliability and Observability Baseline** - Add regression prevention, crash visibility, and deterministic app startup behavior.
-- [ ] **Phase 3: Performance and Architecture Refactor** - Remove known jank paths and reduce fragile coupling in playback/mixer flow.
+- [x] **Phase 3: Performance and Architecture Refactor** - Remove known jank paths and reduce fragile coupling in playback/mixer flow.
 - [ ] **Phase 4: Test and CI Expansion** - Scale automated quality gates from smoke tests to integration confidence.
 - [ ] **Phase 5: Feature Growth Readiness (IAP + Catalog Evolution)** - Prepare safe feature expansion and post-v1 scaling patterns.
 
@@ -76,6 +76,7 @@ Plans:
 
 ### Phase 3: Performance and Architecture Refactor
 **Goal**: UI interactions stay smooth under realistic usage while reducing change-risk in large feature files.
+**Requirements**: [P3-01, P3-02, P3-03, P3-04]
 **Depends on**: Phase 2
 **Estimated scope**: Large (8-12 engineering days)
 **Primary risks**:
@@ -95,7 +96,16 @@ Plans:
 - Profile run measurements captured for before/after on representative device.
 - Widget/integration parity checks for player, mixer, home, and library navigation.
 - Catalog schema validation test in CI.
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [x] `03-01-PLAN.md` - Migrate mixer active list to lazy rendering with stable keys and parity-first guards.
+  - Completed: `.planning/phases/03-performance-and-architecture-refactor/03-01-SUMMARY.md`
+- [x] `03-02-PLAN.md` - Add adaptive blur degrade policy with profile-evidence thresholds and deterministic policy tests.
+  - Completed: `.planning/phases/03-performance-and-architecture-refactor/03-02-SUMMARY.md`
+- [x] `03-03-PLAN.md` - Apply section-first mixer view split while preserving controller/service contract parity.
+  - Completed: `.planning/phases/03-performance-and-architecture-refactor/03-03-SUMMARY.md`
+- [x] `03-04-PLAN.md` - Externalize sound catalog to schema-validated JSON with backward-compatible loader/cache and CI gate.
+  - Completed: `.planning/phases/03-performance-and-architecture-refactor/03-04-SUMMARY.md`
 **UI hint**: yes
 
 ### Phase 4: Test and CI Expansion
@@ -208,6 +218,6 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Security and Release Hardening | 1/1 | Complete | 2026-04-08 |
 | 2. Reliability and Observability Baseline | 3/3 | Complete | 2026-04-08 |
-| 3. Performance and Architecture Refactor | 0/4 | Not started | - |
+| 3. Performance and Architecture Refactor | 4/4 | Complete | 2026-04-08 |
 | 4. Test and CI Expansion | 0/3 | Not started | - |
 | 5. Feature Growth Readiness (IAP + Catalog Evolution) | 0/3 | Not started | - |
