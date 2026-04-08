@@ -43,7 +43,8 @@
 
 ## Session Continuity
 - **Last completed artifact**: `.planning/phases/01-security-and-release-hardening/01-01-SUMMARY.md`
-- **Next action**: Confirm first green `Flutter CI` run on GitHub; complete release log audit; re-run `/gsd-verifier` on `01-01-PLAN.md`; then Phase 2 planning
+- **Shipping**: `app_v2` pushed to `origin` (2026-04-08). Open PR: https://github.com/Penz7/sleep_heaven/compare/main...app_v2?expand=1 — `gh` CLI not installed locally; paste PR body from assistant message.
+- **Next action**: Create PR on GitHub; wait for `Flutter CI` + `Secret Scan` green; complete release log audit; re-run `/gsd-verifier`; then Phase 2 planning
 - **Execution rhythm**: Daily evidence-driven closeout (deliverable + validation check)
 
 ## Decision Log
