@@ -12,7 +12,7 @@
 - [x] **Phase 2: Reliability and Observability Baseline** - Add regression prevention, crash visibility, and deterministic app startup behavior.
 - [x] **Phase 3: Performance and Architecture Refactor** - Remove known jank paths and reduce fragile coupling in playback/mixer flow.
 - [x] **Phase 4: Test and CI Expansion** - Scale automated quality gates from smoke tests to integration confidence.
-- [ ] **Phase 5: Feature Growth Readiness (IAP + Catalog Evolution)** - Prepare safe feature expansion and post-v1 scaling patterns.
+- [x] **Phase 5: Feature Growth Readiness (IAP + Catalog Evolution)** - Prepare safe feature expansion and post-v1 scaling patterns.
 
 ## Phase Details
 
@@ -141,6 +141,7 @@ Plans:
 
 ### Phase 5: Feature Growth Readiness (IAP + Catalog Evolution)
 **Goal**: New premium and content features can be added safely without destabilizing core flows.
+**Requirements**: [P5-FLAG-01, P5-CAT-02, P5-IAP-03, P5-REL-04]
 **Depends on**: Phase 4
 **Estimated scope**: Medium-Large (6-10 engineering days)
 **Primary risks**:
@@ -160,7 +161,14 @@ Plans:
 - Feature-flag toggling tests across app startup and runtime.
 - App size/performance comparison report against baseline.
 - IAP edge-case scenario runbook executed before release cut.
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [x] `05-01-PLAN.md` - Establish typed runtime feature-flag foundation for premium rollouts with startup-safe default-off behavior.
+  - Completed: `.planning/phases/05-feature-growth-readiness-iap-catalog-evolution/05-01-SUMMARY.md`
+- [x] `05-02-PLAN.md` - Implement catalog growth loading strategy with bounded startup impact and contract-based scaling tests.
+  - Completed: `.planning/phases/05-feature-growth-readiness-iap-catalog-evolution/05-02-SUMMARY.md`
+- [x] `05-03-PLAN.md` - Harden IAP pending/restore/offline edge paths and codify release go/no-go evidence checklist.
+  - Completed: `.planning/phases/05-feature-growth-readiness-iap-catalog-evolution/05-03-SUMMARY.md`
 
 ## First 2 Weeks Execution Plan
 
@@ -228,4 +236,4 @@ Plans:
 | 2. Reliability and Observability Baseline | 3/3 | Complete | 2026-04-08 |
 | 3. Performance and Architecture Refactor | 4/4 | Complete | 2026-04-08 |
 | 4. Test and CI Expansion | 3/3 | Complete | 2026-04-08 |
-| 5. Feature Growth Readiness (IAP + Catalog Evolution) | 0/3 | Not started | - |
+| 5. Feature Growth Readiness (IAP + Catalog Evolution) | 3/3 | Complete | 2026-04-08 |

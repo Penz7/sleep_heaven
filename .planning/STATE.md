@@ -7,10 +7,10 @@
 
 ## Current Position
 - **Current phase**: 5
-- **Current plan**: pending kickoff
-- **Status**: Phase 4 shipped (PR #4 opened)
-- **Progress**: 92%
-- **Immediate next milestone**: Merge PR #4 and start Phase 5 discussion/planning
+- **Current plan**: 03 complete
+- **Status**: Phase 5 implemented and verified locally
+- **Progress**: 100%
+- **Immediate next milestone**: Open Phase 5 shipping PR
 
 ## Performance Metrics Baseline
 - **Automated test maturity**: Baseline (signing contract + GetX/Hive/IAP bootstrap smoke)
@@ -57,3 +57,6 @@
 - Adopt `ListView.builder` with stable `ValueKey(soundId)` for mixer active list to reduce eager rendering overhead while preserving UI parity.
 - Split `mixer_view.dart` into section modules (header, active sounds, bottom actions) without changing `MixerController` contracts.
 - Externalize sound catalog to `assets/catalog/sound_catalog.v1.json` with schema validation and CI contract tests.
+- Adopt typed fail-closed feature flags initialized before IAP startup.
+- Use bounded catalog startup slice loading with warmup limit guardrails.
+- Harden IAP pending/restore inconsistency transitions and tie release sign-off to CI evidence.
