@@ -16,9 +16,11 @@ import 'core/observability/telemetry_provider.dart';
 import 'core/observability/telemetry_service.dart';
 import 'core/services/audio_handler.dart';
 import 'core/services/iap_service.dart';
+import 'core/services/navigation_state_service.dart';
 import 'core/startup/startup_coordinator.dart';
 import 'core/startup/startup_result.dart';
 import 'core/themes/app_theme.dart';
+import 'core/widgets/floating_playback_bubble.dart';
 import 'data/providers/hive_provider.dart';
 import 'routes/app_pages.dart';
 import 'routes/app_routes.dart';
@@ -174,14 +176,25 @@ class MyApp extends StatelessWidget {
           themeMode: ThemeMode.dark,
           getPages: AppPages.pages,
           initialRoute: _getInitialRoute(),
+          routingCallback: (Routing? routing) {
+            if (!Get.isRegistered<NavigationStateService>()) {
+              return;
+            }
+            final NavigationStateService nav =
+                Get.find<NavigationStateService>();
+            nav.updateRoute(routing?.current);
+          },
           builder: (BuildContext context, Widget? routedChild) {
             final Widget body = routedChild ?? const SizedBox.shrink();
+            final Widget bodyWithBubble = Stack(
+              children: <Widget>[body, const FloatingPlaybackBubble()],
+            );
             if (!bootState.result.isDegraded) {
-              return body;
+              return bodyWithBubble;
             }
             return Stack(
               children: <Widget>[
-                body,
+                bodyWithBubble,
                 Align(
                   alignment: Alignment.topCenter,
                   child: DegradedBootNotice(

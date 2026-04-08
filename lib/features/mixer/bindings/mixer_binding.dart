@@ -8,7 +8,9 @@ import '../controllers/mixer_controller.dart';
 class MixerBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<MixerController>(() => MixerController());
+    if (!Get.isRegistered<MixerController>()) {
+      Get.put<MixerController>(MixerController(), permanent: true);
+    }
     Get.lazyPut<LocalMusicController>(
       () => LocalMusicController(
         Get.find<LocalTrackRepository>(),
