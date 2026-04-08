@@ -58,10 +58,7 @@ void main() {
 
       expect(provider.captured, hasLength(1));
       expect(provider.captured.first.tags['domain'], equals('iap'));
-      expect(
-        provider.captured.first.tags['severity'],
-        equals('recoverable'),
-      );
+      expect(provider.captured.first.tags['severity'], equals('recoverable'));
     });
 
     test('does not emit to provider when telemetry is disabled', () async {

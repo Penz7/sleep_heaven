@@ -52,8 +52,8 @@ class PremiumView extends GetView<PremiumController> {
                 Text(
                   AppStrings.unlockAll,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
@@ -63,7 +63,10 @@ class PremiumView extends GetView<PremiumController> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32),
-                _FeatureItem(icon: Icons.lock_open, text: 'Unlock all premium sounds'),
+                _FeatureItem(
+                  icon: Icons.lock_open,
+                  text: 'Unlock all premium sounds',
+                ),
                 _FeatureItem(icon: Icons.tune, text: 'Mix unlimited tracks'),
                 const Spacer(),
                 Obx(

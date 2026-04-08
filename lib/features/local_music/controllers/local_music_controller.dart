@@ -62,7 +62,8 @@ class LocalMusicController extends GetxController {
       }
 
       final title = file.name;
-      final id = 'local_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(9999)}';
+      final id =
+          'local_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(9999)}';
       final track = LocalTrackModel(id: id, title: title, filePath: path);
 
       await _repository.add(track);

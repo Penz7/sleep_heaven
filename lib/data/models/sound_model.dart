@@ -39,22 +39,22 @@ class SoundModel {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'categoryId': categoryId,
-        'assetPath': assetPath,
-        'imagePath': imagePath,
-        'isPremium': isPremium,
-        'icon': icon,
-      };
+    'id': id,
+    'title': title,
+    'categoryId': categoryId,
+    'assetPath': assetPath,
+    'imagePath': imagePath,
+    'isPremium': isPremium,
+    'icon': icon,
+  };
 
   factory SoundModel.fromJson(Map<String, dynamic> json) => SoundModel(
-        id: json['id'] as String,
-        title: json['title'] as String,
-        categoryId: json['categoryId'] as String,
-        assetPath: json['assetPath'] as String,
-        imagePath: json['imagePath'] as String,
-        isPremium: json['isPremium'] as bool? ?? false,
-        icon: json['icon'] as String? ?? 'default',
-      );
+    id: json['id'] as String,
+    title: json['title'] as String,
+    categoryId: json['categoryId'] as String,
+    assetPath: json['assetPath'] as String,
+    imagePath: json['imagePath'] as String,
+    isPremium: json['isPremium'] as bool? ?? false,
+    icon: json['icon'] as String? ?? 'default',
+  );
 }

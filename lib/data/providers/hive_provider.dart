@@ -42,7 +42,9 @@ class HiveProvider {
   bool isFavorite(String soundId) => favoriteIds.contains(soundId);
 
   bool get hasSeenOnboarding =>
-      _settingsBoxInstance?.get(_hasSeenOnboardingKey, defaultValue: false) as bool? ?? false;
+      _settingsBoxInstance?.get(_hasSeenOnboardingKey, defaultValue: false)
+          as bool? ??
+      false;
 
   set hasSeenOnboarding(bool value) {
     _settingsBoxInstance?.put(_hasSeenOnboardingKey, value);

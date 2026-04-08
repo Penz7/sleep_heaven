@@ -1,15 +1,6 @@
-enum DomainErrorDomain {
-  startup,
-  iap,
-  audio,
-  storage,
-  permission,
-}
+enum DomainErrorDomain { startup, iap, audio, storage, permission }
 
-enum DomainErrorSeverity {
-  fatal,
-  recoverable,
-}
+enum DomainErrorSeverity { fatal, recoverable }
 
 class DomainError {
   const DomainError({

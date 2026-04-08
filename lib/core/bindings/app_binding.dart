@@ -11,10 +11,7 @@ class AppBinding extends Bindings {
   @override
   void dependencies() {
     Get.put<SoundRepository>(
-      SoundRepository(
-        Get.find<HiveProvider>(),
-        Get.find<IAPService>(),
-      ),
+      SoundRepository(Get.find<HiveProvider>(), Get.find<IAPService>()),
       permanent: true,
     );
     Get.put<LocalTrackRepository>(

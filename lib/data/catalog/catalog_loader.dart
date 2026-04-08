@@ -7,7 +7,8 @@ import '../models/sound_model.dart';
 
 class CatalogLoader {
   static const String catalogAssetPath = 'assets/catalog/sound_catalog.v1.json';
-  static const String schemaAssetPath = 'assets/catalog/sound_catalog.schema.json';
+  static const String schemaAssetPath =
+      'assets/catalog/sound_catalog.schema.json';
 
   Future<CatalogLoadResult> loadFromAssets({
     String catalogPath = catalogAssetPath,
@@ -38,7 +39,9 @@ class CatalogLoader {
     final String version = catalogJson['version'] as String;
     final List<dynamic> sounds = catalogJson['sounds'] as List<dynamic>;
     final List<SoundModel> decoded = sounds
-        .map((dynamic item) => SoundModel.fromJson(item as Map<String, dynamic>))
+        .map(
+          (dynamic item) => SoundModel.fromJson(item as Map<String, dynamic>),
+        )
         .toList(growable: false);
 
     _assertUniqueIds(decoded);
@@ -56,10 +59,7 @@ class CatalogLoader {
 }
 
 class CatalogLoadResult {
-  const CatalogLoadResult({
-    required this.version,
-    required this.sounds,
-  });
+  const CatalogLoadResult({required this.version, required this.sounds});
 
   final String version;
   final List<SoundModel> sounds;

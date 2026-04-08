@@ -385,7 +385,7 @@ class _GlassContainer extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final double borderRadius;
   final Color? backgroundColor;
-   final bool useBlur;
+  final bool useBlur;
 
   @override
   Widget build(BuildContext context) {

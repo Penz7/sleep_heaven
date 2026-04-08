@@ -22,8 +22,8 @@ class StartupCoordinator {
   const StartupCoordinator({
     required TelemetryService telemetryService,
     required List<StartupStepConfig> steps,
-  })  : _telemetryService = telemetryService,
-        _steps = steps;
+  }) : _telemetryService = telemetryService,
+       _steps = steps;
 
   final TelemetryService _telemetryService;
   final List<StartupStepConfig> _steps;
@@ -49,7 +49,9 @@ class StartupCoordinator {
         if (step.isCritical) {
           return StartupResult.fatal('Startup failed at ${step.name}.');
         }
-        return StartupResult.degraded('Some services are degraded: ${step.name}.');
+        return StartupResult.degraded(
+          'Some services are degraded: ${step.name}.',
+        );
       }
     }
     return const StartupResult.ok();

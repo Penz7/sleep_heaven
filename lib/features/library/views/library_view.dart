@@ -106,9 +106,7 @@ class _LibraryContent extends StatelessWidget {
                 duration: const Duration(milliseconds: 400),
                 switchInCurve: Curves.easeOutCubic,
                 switchOutCurve: Curves.easeInCubic,
-                child: Obx(
-                  key: ValueKey(c.selectedTabIndex),
-                  () {
+                child: Obx(key: ValueKey(c.selectedTabIndex), () {
                   final repo = Get.find<SoundRepository>();
                   final isPremium = repo.isPremium;
                   return GridView.builder(
@@ -117,17 +115,17 @@ class _LibraryContent extends StatelessWidget {
                       horizontal: 20,
                       vertical: 12,
                     ),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 1,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 1,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                        ),
                     itemCount: c.sounds.length,
                     itemBuilder: (context, index) {
                       final sound = c.sounds[index];
-                      final isLocked =
-                          sound.isPremium && !isPremium;
+                      final isLocked = sound.isPremium && !isPremium;
                       return _AnimatedSoundCard(
                         index: index,
                         child: _BubbleSoundCard(
@@ -143,8 +141,7 @@ class _LibraryContent extends StatelessWidget {
                       );
                     },
                   );
-                },
-                ),
+                }),
               ),
             ),
           ],
@@ -226,13 +223,15 @@ class _BubbleSoundCard extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: isLocked ? [
-              AppColors.backgroundDark.opacityColor(0.35),
-              AppColors.cardDark.opacityColor(0.5),
-            ] : [
-              AppColors.backgroundDark,
-              AppColors.accent.opacityColor(0.3),
-            ],
+            colors: isLocked
+                ? [
+                    AppColors.backgroundDark.opacityColor(0.35),
+                    AppColors.cardDark.opacityColor(0.5),
+                  ]
+                : [
+                    AppColors.backgroundDark,
+                    AppColors.accent.opacityColor(0.3),
+                  ],
           ),
           boxShadow: [
             BoxShadow(

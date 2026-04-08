@@ -9,8 +9,9 @@ const List<String> _corePathPrefixes = <String>[
   'lib/data/repositories/',
 ];
 
-final RegExp _featuresControllerPattern =
-    RegExp(r'^lib/features/.+/controllers/');
+final RegExp _featuresControllerPattern = RegExp(
+  r'^lib/features/.+/controllers/',
+);
 
 class _CoverageStats {
   const _CoverageStats({required this.total, required this.hit});
@@ -36,13 +37,15 @@ int runCoverageGate(
   final Map<String, String> cli = _parseArgs(args);
   final String lcovPath = cli['lcov'] ?? 'coverage/lcov.info';
   final String baselinePath = cli['baseline-file'] ?? '';
-  final String summaryPath = cli['summary-out'] ?? 'coverage/core-coverage-summary.json';
+  final String summaryPath =
+      cli['summary-out'] ?? 'coverage/core-coverage-summary.json';
 
   final Map<String, dynamic> baseline = _readBaseline(baselinePath);
   final double minThreshold =
       (baseline['minimum_core_coverage_percent'] as num?)?.toDouble() ?? 0;
   final double ratchetThreshold =
-      (baseline['ratchet_threshold_percent'] as num?)?.toDouble() ?? minThreshold;
+      (baseline['ratchet_threshold_percent'] as num?)?.toDouble() ??
+      minThreshold;
 
   final _CoverageStats core = _computeCoverage(
     lcovPath: lcovPath,

@@ -33,9 +33,7 @@ class MixerView extends GetView<MixerController> {
               Column(
                 children: [
                   const MixerHeaderSection(),
-                  const Expanded(
-                    child: ActiveSoundsSection(),
-                  ),
+                  const Expanded(child: ActiveSoundsSection()),
                   SizedBox(height: size.height * 0.18),
                 ],
               ),
@@ -54,11 +52,7 @@ class MixerView extends GetView<MixerController> {
   }
 
   void _showAddSoundSheet(BuildContext context) {
-    Get.bottomSheet(
-      _AddSoundSheet(
-        controller: controller,
-      ),
-    );
+    Get.bottomSheet(_AddSoundSheet(controller: controller));
   }
 }
 
@@ -109,86 +103,79 @@ class _AddSoundSheetState extends State<_AddSoundSheet> {
                 ),
               ),
               Expanded(
-                child: Obx(
-                  () {
-                    final isPremium = localMusicCtrl.isPremium;
-                    return TextButton(
-                      onPressed: () {
-                        if (!isPremium) {
-                          Get.back();
-                          Get.toNamed(Routes.premium);
-                        } else {
-                          setState(() => _selectedTab = 1);
-                        }
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (!isPremium) ...[
-                            const Icon(Icons.lock, size: 16),
-                            const SizedBox(width: 4),
-                          ],
-                          Text(
-                            'From Device',
-                            style: TextStyle(
-                              color: _selectedTab == 1 ? AppColors.accent : null,
-                            ),
-                          ),
+                child: Obx(() {
+                  final isPremium = localMusicCtrl.isPremium;
+                  return TextButton(
+                    onPressed: () {
+                      if (!isPremium) {
+                        Get.back();
+                        Get.toNamed(Routes.premium);
+                      } else {
+                        setState(() => _selectedTab = 1);
+                      }
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (!isPremium) ...[
+                          const Icon(Icons.lock, size: 16),
+                          const SizedBox(width: 4),
                         ],
-                      ),
-                    );
-                  },
-                ),
+                        Text(
+                          'From Device',
+                          style: TextStyle(
+                            color: _selectedTab == 1 ? AppColors.accent : null,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
               ),
             ],
           ),
           Expanded(
             child: _selectedTab == 0
-                ? Obx(
-                    () {
-                      final isPremium = repo.isPremium;
-                      return ListView.builder(
-                        itemCount: sounds.length,
-                        itemBuilder: (context, index) {
-                          final sound = sounds[index];
-                          final alreadyAdded =
-                              widget.controller.tracks.containsKey(sound.id);
-                          final isLocked = sound.isPremium &&
-                              !isPremium &&
-                              !alreadyAdded;
-                          return ListTile(
-                            title: Text(sound.title),
-                            trailing: alreadyAdded
-                                ? const Icon(Icons.check)
-                                : IconButton(
-                                    icon: Icon(
-                                      isLocked ? Icons.lock : Icons.add,
-                                    ),
-                                    onPressed: () {
-                                      Get.back();
-                                      widget.controller.addTrack(sound);
-                                    },
-                                  ),
-                          );
-                        },
-                      );
-                    },
-                  )
-                : Obx(
-                    () {
-                      if (!localMusicCtrl.isPremium) {
-                        return const Center(
-                          child: Text('Premium is required to add music from your device'),
+                ? Obx(() {
+                    final isPremium = repo.isPremium;
+                    return ListView.builder(
+                      itemCount: sounds.length,
+                      itemBuilder: (context, index) {
+                        final sound = sounds[index];
+                        final alreadyAdded = widget.controller.tracks
+                            .containsKey(sound.id);
+                        final isLocked =
+                            sound.isPremium && !isPremium && !alreadyAdded;
+                        return ListTile(
+                          title: Text(sound.title),
+                          trailing: alreadyAdded
+                              ? const Icon(Icons.check)
+                              : IconButton(
+                                  icon: Icon(isLocked ? Icons.lock : Icons.add),
+                                  onPressed: () {
+                                    Get.back();
+                                    widget.controller.addTrack(sound);
+                                  },
+                                ),
                         );
-                      }
-                      return LocalMusicSheet(
-                        onTrackSelected: (track) {
-                          Get.back();
-                          widget.controller.addLocalTrack(track);
-                        },
+                      },
+                    );
+                  })
+                : Obx(() {
+                    if (!localMusicCtrl.isPremium) {
+                      return const Center(
+                        child: Text(
+                          'Premium is required to add music from your device',
+                        ),
                       );
-                    },
-                  ),
+                    }
+                    return LocalMusicSheet(
+                      onTrackSelected: (track) {
+                        Get.back();
+                        widget.controller.addLocalTrack(track);
+                      },
+                    );
+                  }),
           ),
         ],
       ),

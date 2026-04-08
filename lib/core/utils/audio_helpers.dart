@@ -14,7 +14,10 @@ class AudioHelpers {
 
     for (var i = 0; i < steps; i++) {
       await Future<void>.delayed(Duration(milliseconds: stepDuration));
-      final newVol = (currentVolume - (stepDecrement * (i + 1))).clamp(0.0, 1.0);
+      final newVol = (currentVolume - (stepDecrement * (i + 1))).clamp(
+        0.0,
+        1.0,
+      );
       await setVolume(newVol);
     }
   }

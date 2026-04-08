@@ -6,16 +6,15 @@ class TelemetryService {
   TelemetryService({
     required TelemetryProvider provider,
     required TelemetryConfig config,
-  })  : _provider = provider,
-        _config = config;
+  }) : _provider = provider,
+       _config = config;
 
   final TelemetryProvider _provider;
   final TelemetryConfig _config;
   final List<DomainError> _localDiagnostics = <DomainError>[];
 
-  List<DomainError> get localDiagnostics => List<DomainError>.unmodifiable(
-        _localDiagnostics,
-      );
+  List<DomainError> get localDiagnostics =>
+      List<DomainError>.unmodifiable(_localDiagnostics);
 
   Future<void> capture(DomainError error) async {
     _localDiagnostics.add(error);

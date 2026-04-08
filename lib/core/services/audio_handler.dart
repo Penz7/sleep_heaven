@@ -19,23 +19,30 @@ class SleepAudioHandler extends BaseAudioHandler {
     Duration? duration,
   }) {
     _originalArtist = artist;
-    mediaItem.add(MediaItem(id: id, title: title, artist: artist, duration: duration));
+    mediaItem.add(
+      MediaItem(id: id, title: title, artist: artist, duration: duration),
+    );
   }
 
   /// Cập nhật trạng thái play/pause trên notification.
   /// [position] cần thiết để iOS biết vị trí phát hiện tại — iOS sẽ tự tính toán
   /// thời gian trôi qua dựa trên position + updateTime mà không cần update mỗi giây.
-  void setPlaybackState({required bool playing, Duration position = Duration.zero}) {
-    playbackState.add(PlaybackState(
-      controls: [
-        if (playing) MediaControl.pause else MediaControl.play,
-        MediaControl.stop,
-      ],
-      androidCompactActionIndices: const [0],
-      processingState: AudioProcessingState.ready,
-      playing: playing,
-      updatePosition: position,
-    ));
+  void setPlaybackState({
+    required bool playing,
+    Duration position = Duration.zero,
+  }) {
+    playbackState.add(
+      PlaybackState(
+        controls: [
+          if (playing) MediaControl.pause else MediaControl.play,
+          MediaControl.stop,
+        ],
+        androidCompactActionIndices: const [0],
+        processingState: AudioProcessingState.ready,
+        playing: playing,
+        updatePosition: position,
+      ),
+    );
   }
 
   /// Cập nhật notification hiển thị thời gian còn lại (gọi mỗi giây khi timer chạy)
@@ -43,9 +50,9 @@ class SleepAudioHandler extends BaseAudioHandler {
     final current = mediaItem.value;
     if (current == null) return;
     // Dùng artist field - hiển thị đáng tin cậy trên cả Android notification và iOS lock screen
-    mediaItem.add(current.copyWith(
-      artist: '⏱ ${_formatRemaining(remaining)} remaining',
-    ));
+    mediaItem.add(
+      current.copyWith(artist: '⏱ ${_formatRemaining(remaining)} remaining'),
+    );
   }
 
   /// Đặt duration của MediaItem thành timer duration để progress bar trên lock screen
@@ -61,10 +68,12 @@ class SleepAudioHandler extends BaseAudioHandler {
   void clearTimer(Duration? audioDuration) {
     final current = mediaItem.value;
     if (current == null) return;
-    mediaItem.add(current.copyWith(
-      artist: _originalArtist ?? 'Sleep Heaven',
-      duration: audioDuration,
-    ));
+    mediaItem.add(
+      current.copyWith(
+        artist: _originalArtist ?? 'Sleep Heaven',
+        duration: audioDuration,
+      ),
+    );
   }
 
   /// Xóa timer khỏi notification (khi Off hoặc timer kết thúc)
@@ -104,10 +113,7 @@ class SleepAudioHandler extends BaseAudioHandler {
     return _ownershipToken;
   }
 
-  void releaseOwnership({
-    required String ownerId,
-    required int token,
-  }) {
+  void releaseOwnership({required String ownerId, required int token}) {
     if (_activeOwner != ownerId || token != _ownershipToken) {
       return;
     }
