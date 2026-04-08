@@ -107,6 +107,30 @@ void main() {
   );
 
   test(
+    'offline startup then online replay remains single-side-effect per online attempt',
+    () async {
+      final _FakeStoreClient storeClient = _FakeStoreClient();
+      final _FakeConnectivityClient connectivityClient = _FakeConnectivityClient(
+        <ConnectivityResult>[ConnectivityResult.none],
+      );
+      final IAPService service = IAPService(
+        storeClient: storeClient,
+        secureStore: _FakeStore(),
+        connectivityClient: connectivityClient,
+      );
+
+      await service.attemptStartupReconciliation();
+      connectivityClient.results = <ConnectivityResult>[ConnectivityResult.wifi];
+      await service.attemptStartupReconciliation();
+      await service.attemptStartupReconciliation();
+
+      expect(service.hasPendingReconciliation.value, isFalse);
+      expect(storeClient.restoreCalls, equals(2));
+    },
+    timeout: const Timeout(Duration(seconds: 10)),
+  );
+
+  test(
     'repeated startup restore is idempotent with singleton service',
     () async {
       final _FakeStoreClient storeClient = _FakeStoreClient();
