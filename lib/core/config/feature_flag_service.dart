@@ -16,7 +16,9 @@ class FeatureFlagService {
   }
 
   factory FeatureFlagService.fromMap(Map<String, Object?> payload) {
-    final Map<String, bool> merged = Map<String, bool>.from(FeatureFlags.defaults);
+    final Map<String, bool> merged = Map<String, bool>.from(
+      FeatureFlags.defaults,
+    );
     for (final MapEntry<String, Object?> entry in payload.entries) {
       if (!FeatureFlags.isKnownFlag(entry.key)) {
         continue;

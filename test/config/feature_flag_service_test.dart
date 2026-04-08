@@ -5,17 +5,13 @@ import 'package:sleep_heaven/core/config/feature_flags.dart';
 void main() {
   group('FeatureFlagService', () {
     test('known premium flags resolve to expected typed values', () {
-      final FeatureFlagService service = FeatureFlagService.fromMap(
-        <String, Object?>{
-          FeatureFlags.premiumCatalogGrowth: true,
-          FeatureFlags.premiumIapReliabilityGuardrails: true,
-        },
-      );
+      final FeatureFlagService service =
+          FeatureFlagService.fromMap(<String, Object?>{
+            FeatureFlags.premiumCatalogGrowth: true,
+            FeatureFlags.premiumIapReliabilityGuardrails: true,
+          });
 
-      expect(
-        service.isEnabled(FeatureFlags.premiumCatalogGrowth),
-        isTrue,
-      );
+      expect(service.isEnabled(FeatureFlags.premiumCatalogGrowth), isTrue);
       expect(
         service.isEnabled(FeatureFlags.premiumIapReliabilityGuardrails),
         isTrue,
@@ -27,10 +23,7 @@ void main() {
         const <String, Object?>{},
       );
 
-      expect(
-        service.isEnabled(FeatureFlags.premiumCatalogGrowth),
-        isFalse,
-      );
+      expect(service.isEnabled(FeatureFlags.premiumCatalogGrowth), isFalse);
       expect(
         service.isEnabled(FeatureFlags.premiumIapReliabilityGuardrails),
         isFalse,
@@ -38,17 +31,13 @@ void main() {
     });
 
     test('invalid payload values fail closed', () {
-      final FeatureFlagService service = FeatureFlagService.fromMap(
-        <String, Object?>{
-          FeatureFlags.premiumCatalogGrowth: 'true',
-          FeatureFlags.premiumIapReliabilityGuardrails: 1,
-        },
-      );
+      final FeatureFlagService service =
+          FeatureFlagService.fromMap(<String, Object?>{
+            FeatureFlags.premiumCatalogGrowth: 'true',
+            FeatureFlags.premiumIapReliabilityGuardrails: 1,
+          });
 
-      expect(
-        service.isEnabled(FeatureFlags.premiumCatalogGrowth),
-        isFalse,
-      );
+      expect(service.isEnabled(FeatureFlags.premiumCatalogGrowth), isFalse);
       expect(
         service.isEnabled(FeatureFlags.premiumIapReliabilityGuardrails),
         isFalse,

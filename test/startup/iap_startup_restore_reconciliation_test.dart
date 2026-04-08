@@ -110,9 +110,10 @@ void main() {
     'offline startup then online replay remains single-side-effect per online attempt',
     () async {
       final _FakeStoreClient storeClient = _FakeStoreClient();
-      final _FakeConnectivityClient connectivityClient = _FakeConnectivityClient(
-        <ConnectivityResult>[ConnectivityResult.none],
-      );
+      final _FakeConnectivityClient connectivityClient =
+          _FakeConnectivityClient(<ConnectivityResult>[
+            ConnectivityResult.none,
+          ]);
       final IAPService service = IAPService(
         storeClient: storeClient,
         secureStore: _FakeStore(),
@@ -120,7 +121,9 @@ void main() {
       );
 
       await service.attemptStartupReconciliation();
-      connectivityClient.results = <ConnectivityResult>[ConnectivityResult.wifi];
+      connectivityClient.results = <ConnectivityResult>[
+        ConnectivityResult.wifi,
+      ];
       await service.attemptStartupReconciliation();
       await service.attemptStartupReconciliation();
 

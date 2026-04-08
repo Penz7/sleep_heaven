@@ -19,10 +19,7 @@ String _buildCatalogJson({required int count}) {
     },
     growable: false,
   );
-  return jsonEncode(<String, Object>{
-    'version': '1.0.0',
-    'sounds': sounds,
-  });
+  return jsonEncode(<String, Object>{'version': '1.0.0', 'sounds': sounds});
 }
 
 void main() {

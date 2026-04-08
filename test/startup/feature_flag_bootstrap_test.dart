@@ -46,28 +46,31 @@ void main() {
     expect(iapIndex, greaterThan(featureFlagIndex));
   });
 
-  test('bootstrap fallbacks to default-off when runtime payload is invalid', () async {
-    Get.testMode = true;
-    Get.reset();
-    final TelemetryService telemetryService = TelemetryService(
-      provider: _NoopTelemetryProvider(),
-      config: const TelemetryConfig(enabled: false, provider: 'noop'),
-    );
-    final steps = buildStartupSteps(
-      telemetryService,
-      featureFlagBundle: _ThrowingAssetBundle(),
-    );
+  test(
+    'bootstrap fallbacks to default-off when runtime payload is invalid',
+    () async {
+      Get.testMode = true;
+      Get.reset();
+      final TelemetryService telemetryService = TelemetryService(
+        provider: _NoopTelemetryProvider(),
+        config: const TelemetryConfig(enabled: false, provider: 'noop'),
+      );
+      final steps = buildStartupSteps(
+        telemetryService,
+        featureFlagBundle: _ThrowingAssetBundle(),
+      );
 
-    final featureStep = steps.firstWhere(
-      (step) => step.name == 'feature_flags',
-    );
-    await featureStep.action();
+      final featureStep = steps.firstWhere(
+        (step) => step.name == 'feature_flags',
+      );
+      await featureStep.action();
 
-    final FeatureFlagService service = Get.find<FeatureFlagService>();
-    expect(service.isEnabled(FeatureFlags.premiumCatalogGrowth), isFalse);
-    expect(
-      service.isEnabled(FeatureFlags.premiumIapReliabilityGuardrails),
-      isFalse,
-    );
-  });
+      final FeatureFlagService service = Get.find<FeatureFlagService>();
+      expect(service.isEnabled(FeatureFlags.premiumCatalogGrowth), isFalse);
+      expect(
+        service.isEnabled(FeatureFlags.premiumIapReliabilityGuardrails),
+        isFalse,
+      );
+    },
+  );
 }

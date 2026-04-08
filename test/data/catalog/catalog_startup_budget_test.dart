@@ -6,7 +6,10 @@ void main() {
 
   test('provider startup warmup path stays within bounded budget', () {
     final List sounds = LocalSoundProvider.getStartupSoundsForBudget();
-    expect(sounds.length, lessThanOrEqualTo(LocalSoundProvider.startupWarmupLimit));
+    expect(
+      sounds.length,
+      lessThanOrEqualTo(LocalSoundProvider.startupWarmupLimit),
+    );
     expect(sounds, isNotEmpty);
   });
 }

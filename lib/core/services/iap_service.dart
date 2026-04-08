@@ -259,7 +259,9 @@ class IAPService extends GetxService {
         case PurchaseStatus.restored:
           if (purchase.verificationData.localVerificationData.isEmpty &&
               purchase.verificationData.serverVerificationData.isEmpty) {
-            await applyReliabilityState(IapReliabilityState.restoreInconsistent);
+            await applyReliabilityState(
+              IapReliabilityState.restoreInconsistent,
+            );
             break;
           }
           await applyReliabilityState(IapReliabilityState.restored);
