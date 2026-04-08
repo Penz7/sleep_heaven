@@ -22,6 +22,17 @@ class _CoverageStats {
 }
 
 void main(List<String> args) {
+  exitCode = runCoverageGate(args);
+}
+
+int runCoverageGate(
+  List<String> args, {
+  void Function(String message)? infoLog,
+  void Function(String message)? errorLog,
+}) {
+  final void Function(String message) info = infoLog ?? stdout.writeln;
+  final void Function(String message) error = errorLog ?? stderr.writeln;
+
   final Map<String, String> cli = _parseArgs(args);
   final String lcovPath = cli['lcov'] ?? 'coverage/lcov.info';
   final String baselinePath = cli['baseline-file'] ?? '';
@@ -68,15 +79,16 @@ void main(List<String> args) {
     const JsonEncoder.withIndent('  ').convert(summary),
   );
 
-  stdout.writeln('Core coverage: ${_round2(core.percent)}% (threshold: $minThreshold%)');
-  stdout.writeln('Non-core advisory coverage: ${_round2(advisory.percent)}%');
-  stdout.writeln('Summary: ${summaryFile.path}');
+  info('Core coverage: ${_round2(core.percent)}% (threshold: $minThreshold%)');
+  info('Non-core advisory coverage: ${_round2(advisory.percent)}%');
+  info('Summary: ${summaryFile.path}');
   if (!coreGatePass) {
-    stderr.writeln(
+    error(
       'Core coverage gate failed (${_round2(core.percent)}% < $minThreshold%).',
     );
-    exitCode = 1;
+    return 1;
   }
+  return 0;
 }
 
 _CoverageStats _computeCoverage({
@@ -85,8 +97,7 @@ _CoverageStats _computeCoverage({
 }) {
   final File lcov = File(lcovPath);
   if (!lcov.existsSync()) {
-    stderr.writeln('LCOV file not found: $lcovPath');
-    exit(1);
+    throw ArgumentError('LCOV file not found: $lcovPath');
   }
 
   String currentFile = '';

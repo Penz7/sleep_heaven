@@ -1,4 +1,4 @@
-@Tags(<String>['critical-smoke'])
+@Tags(<String>['critical-smoke'])library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sleep_heaven/core/services/audio_handler.dart';
 import 'package:sleep_heaven/core/startup/startup_result.dart';
@@ -44,3 +44,4 @@ void main() {
     }, timeout: const Timeout(Duration(seconds: 5)));
   });
 }
+

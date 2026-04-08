@@ -1,4 +1,4 @@
-@Tags(<String>['critical-smoke'])
+@Tags(<String>['critical-smoke'])library;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sleep_heaven/app/bootstrap/degraded_boot_notice.dart';
@@ -54,3 +54,4 @@ void main() {
     expect(find.text('App Booted'), findsNothing);
   }, timeout: const Timeout(Duration(seconds: 10)));
 }
+

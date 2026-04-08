@@ -1,4 +1,4 @@
-@Tags(<String>['fast'])
+@Tags(<String>['fast'])library;
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -116,3 +116,4 @@ void main() {
     expect(Get.find<SoundRepository>(), isNotNull);
   }, timeout: const Timeout(Duration(seconds: 10)));
 }
+

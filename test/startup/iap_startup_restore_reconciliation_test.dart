@@ -1,4 +1,4 @@
-@Tags(<String>['critical-smoke'])
+@Tags(<String>['critical-smoke'])library;
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -107,3 +107,4 @@ void main() {
     expect(service.hasPendingReconciliation.value, isFalse);
   }, timeout: const Timeout(Duration(seconds: 10)));
 }
+

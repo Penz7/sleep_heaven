@@ -1,4 +1,4 @@
-@Tags(<String>['fast'])
+@Tags(<String>['fast'])library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sleep_heaven/core/services/audio_handler.dart';
 
@@ -62,3 +62,4 @@ void main() {
     expect(mixerPauseCalls, equals(0));
   }, timeout: const Timeout(Duration(seconds: 5)));
 }
+

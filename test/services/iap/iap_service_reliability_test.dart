@@ -1,4 +1,4 @@
-@Tags(<String>['fast'])
+@Tags(<String>['fast'])library;
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -125,3 +125,4 @@ void main() {
     }, timeout: const Timeout(Duration(seconds: 5)));
   });
 }
+
