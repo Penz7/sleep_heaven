@@ -110,6 +110,7 @@ Plans:
 
 ### Phase 4: Test and CI Expansion
 **Goal**: Every merge is gated by meaningful automated checks that prevent regressions.
+**Requirements**: [P4-CI-01, P4-CI-02, P4-CI-03, P4-CI-04]
 **Depends on**: Phase 3
 **Estimated scope**: Medium (5-7 engineering days)
 **Primary risks**:
@@ -129,7 +130,11 @@ Plans:
 - Open test PRs with intentional failures to verify gate correctness.
 - Measure CI runtime and confirm acceptable feedback loop targets.
 - Confirm rerun stability of integration jobs.
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] `04-01-PLAN.md` - Split CI into fail-fast merge gates and nightly extended confidence lane with deterministic retry policy.
+- [ ] `04-02-PLAN.md` - Expand test pyramid ownership with deterministic core unit/widget and integration smoke contracts.
+- [ ] `04-03-PLAN.md` - Enforce core-module coverage thresholds with CI trend artifacts and baseline-aware ratchet policy.
 
 ### Phase 5: Feature Growth Readiness (IAP + Catalog Evolution)
 **Goal**: New premium and content features can be added safely without destabilizing core flows.

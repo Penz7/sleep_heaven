@@ -7,10 +7,10 @@
 
 ## Current Position
 - **Current phase**: 4
-- **Current plan**: pending kickoff
-- **Status**: Phase 3 shipped (PR #3 opened)
-- **Progress**: 70%
-- **Immediate next milestone**: Merge PR #3, then execute Phase 4 plans
+- **Current plan**: 04-03 completed
+- **Status**: Phase 4 implementation completed; local verification blocked by SDK mismatch
+- **Progress**: 85%
+- **Immediate next milestone**: Upgrade local Flutter SDK to 3.41.6+ and rerun Phase 4 verification suite
 
 ## Performance Metrics Baseline
 - **Automated test maturity**: Baseline (signing contract + GetX/Hive/IAP bootstrap smoke)
@@ -37,12 +37,12 @@
 - Playback UI jank risk remains until Phase 3 list/layer profiling work
 
 ### Open Blockers
-- None currently blocking roadmap execution.
+- Local Flutter/Dart toolchain mismatch blocks local test execution (`Flutter 3.38.8 / Dart 3.10.7` vs project `^3.10.8`).
 
 ## Session Continuity
-- **Last completed artifact**: `.planning/phases/02-reliability-and-observability-baseline/02-03-SUMMARY.md`
+- **Last completed artifact**: `.planning/phases/04-test-and-ci-expansion/04-03-SUMMARY.md`
 - **Shipping**: `phase-03-performance-refactor-ship` pushed to `origin` (2026-04-08). Open PR: https://github.com/Penz7/sleep_heaven/pull/3
-- **Next action**: Run `/gsd-progress` or start `/gsd-execute-phase 4` after PR #3 CI passes/merges
+- **Next action**: Install Flutter 3.41.6+, rerun Phase 4 verification commands, then ship
 - **Execution rhythm**: Daily evidence-driven closeout (deliverable + validation check)
 
 ## Decision Log
