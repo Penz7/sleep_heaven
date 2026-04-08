@@ -6,6 +6,7 @@ import '../models/sound_model.dart';
 
 /// Provider cung cấp danh sách sounds hardcode - 7 free + 14 premium
 class LocalSoundProvider {
+  static const int startupWarmupLimit = 12;
   static final CatalogLoader _catalogLoader = CatalogLoader();
   static final CatalogCache _catalogCache = CatalogCache();
   static Future<void>? _warmupFuture;
@@ -16,7 +17,8 @@ class LocalSoundProvider {
 
   static Future<void> _tryWarmupCatalog() async {
     try {
-      final CatalogLoadResult result = await _catalogLoader.loadFromAssets();
+      final CatalogLoadResult result = await _catalogLoader
+          .loadStartupSliceFromAssets(startupLimit: startupWarmupLimit);
       _catalogCache.setSnapshot(version: result.version, sounds: result.sounds);
     } catch (_) {
       // Keep backward-compatible hardcoded fallback if catalog load fails.
@@ -30,6 +32,11 @@ class LocalSoundProvider {
       return cached;
     }
     return _fallbackSounds;
+  }
+
+  static List<SoundModel> getStartupSoundsForBudget() {
+    final List<SoundModel> all = getAllSounds();
+    return all.take(startupWarmupLimit).toList(growable: false);
   }
 
   static final List<SoundModel> _fallbackSounds = [

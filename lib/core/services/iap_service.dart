@@ -13,9 +13,11 @@ const String _premiumProductId = 'premium_unlock';
 const String _premiumStorageKey = 'premium_unlocked';
 
 enum IapReliabilityState {
+  pending,
   notPurchased,
   purchased,
   restored,
+  restoreInconsistent,
   failed,
   offlineRestore,
 }
@@ -209,6 +211,11 @@ class IAPService extends GetxService {
     IapReliabilityState state,
   ) async {
     switch (state) {
+      case IapReliabilityState.pending:
+        isPremium.value = false;
+        hasPendingReconciliation.value = true;
+        lastRecoverableErrorCode.value = 'IAP_PENDING';
+        return state;
       case IapReliabilityState.notPurchased:
         isPremium.value = false;
         hasPendingReconciliation.value = false;
@@ -220,6 +227,11 @@ class IAPService extends GetxService {
         hasPendingReconciliation.value = false;
         lastRecoverableErrorCode.value = null;
         await _secureStore.write(key: _premiumStorageKey, value: 'true');
+        return state;
+      case IapReliabilityState.restoreInconsistent:
+        isPremium.value = false;
+        hasPendingReconciliation.value = true;
+        lastRecoverableErrorCode.value = 'IAP_RESTORE_INCONSISTENT';
         return state;
       case IapReliabilityState.failed:
         isPremium.value = false;
@@ -245,6 +257,13 @@ class IAPService extends GetxService {
           break;
 
         case PurchaseStatus.restored:
+          if (purchase.verificationData.localVerificationData.isEmpty &&
+              purchase.verificationData.serverVerificationData.isEmpty) {
+            await applyReliabilityState(
+              IapReliabilityState.restoreInconsistent,
+            );
+            break;
+          }
           await applyReliabilityState(IapReliabilityState.restored);
           debugPrint('[IAPService] Premium unlocked (${purchase.status.name})');
           break;
@@ -259,6 +278,7 @@ class IAPService extends GetxService {
           break;
 
         case PurchaseStatus.pending:
+          await applyReliabilityState(IapReliabilityState.pending);
           debugPrint('[IAPService] Purchase pending...');
           break;
       }

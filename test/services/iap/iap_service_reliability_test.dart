@@ -62,6 +62,23 @@ class _FakeConnectivityClient implements ConnectivityClient {
 void main() {
   group('IAP reliability state matrix', () {
     test(
+      'pending never grants entitlement before completion',
+      () async {
+        final IAPService service = IAPService(
+          storeClient: _FakeStoreClient(),
+          secureStore: _FakeStore(),
+          connectivityClient: _FakeConnectivityClient(<ConnectivityResult>[
+            ConnectivityResult.wifi,
+          ]),
+        );
+        await service.applyReliabilityState(IapReliabilityState.pending);
+        expect(service.isPremium.value, isFalse);
+        expect(service.lastRecoverableErrorCode.value, equals('IAP_PENDING'));
+      },
+      timeout: const Timeout(Duration(seconds: 5)),
+    );
+
+    test(
       'not_purchased keeps entitlement false',
       () async {
         final IAPService service = IAPService(
@@ -125,6 +142,29 @@ void main() {
         await service.applyReliabilityState(IapReliabilityState.failed);
         expect(service.isPremium.value, isFalse);
         expect(service.lastRecoverableErrorCode.value, equals('IAP_FAILED'));
+      },
+      timeout: const Timeout(Duration(seconds: 5)),
+    );
+
+    test(
+      'restore inconsistency keeps entitlement safe and flags recoverable state',
+      () async {
+        final IAPService service = IAPService(
+          storeClient: _FakeStoreClient(),
+          secureStore: _FakeStore(),
+          connectivityClient: _FakeConnectivityClient(<ConnectivityResult>[
+            ConnectivityResult.wifi,
+          ]),
+        );
+        await service.applyReliabilityState(
+          IapReliabilityState.restoreInconsistent,
+        );
+        expect(service.isPremium.value, isFalse);
+        expect(service.hasPendingReconciliation.value, isTrue);
+        expect(
+          service.lastRecoverableErrorCode.value,
+          equals('IAP_RESTORE_INCONSISTENT'),
+        );
       },
       timeout: const Timeout(Duration(seconds: 5)),
     );

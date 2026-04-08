@@ -7,10 +7,10 @@
 
 ## Current Position
 - **Current phase**: 5
-- **Current plan**: pending kickoff
-- **Status**: Phase 4 shipped (PR #4 opened)
-- **Progress**: 92%
-- **Immediate next milestone**: Merge PR #4 and start Phase 5 discussion/planning
+- **Current plan**: 03 complete
+- **Status**: Phase 5 shipped (PR #5 opened)
+- **Progress**: 100%
+- **Immediate next milestone**: Merge PR #5 and close milestone cycle
 
 ## Performance Metrics Baseline
 - **Automated test maturity**: Baseline (signing contract + GetX/Hive/IAP bootstrap smoke)
@@ -40,9 +40,9 @@
 - None currently blocking roadmap execution.
 
 ## Session Continuity
-- **Last completed artifact**: `.planning/phases/04-test-and-ci-expansion/04-03-SUMMARY.md`
-- **Shipping**: `phase-04-test-ci-expansion-ship` pushed to `origin` (2026-04-08). Open PR: https://github.com/Penz7/sleep_heaven/pull/4
-- **Next action**: Merge PR #4, then run `/gsd-discuss-phase 5`
+- **Last completed artifact**: `.planning/phases/05-feature-growth-readiness-iap-catalog-evolution/05-03-SUMMARY.md`
+- **Shipping**: `phase-05-growth-readiness-ship` pushed to `origin` (2026-04-08). Open PR: https://github.com/Penz7/sleep_heaven/pull/5
+- **Next action**: Merge PR #5, then run `/gsd-complete-milestone`
 - **Execution rhythm**: Daily evidence-driven closeout (deliverable + validation check)
 
 ## Decision Log
@@ -57,3 +57,6 @@
 - Adopt `ListView.builder` with stable `ValueKey(soundId)` for mixer active list to reduce eager rendering overhead while preserving UI parity.
 - Split `mixer_view.dart` into section modules (header, active sounds, bottom actions) without changing `MixerController` contracts.
 - Externalize sound catalog to `assets/catalog/sound_catalog.v1.json` with schema validation and CI contract tests.
+- Adopt typed fail-closed feature flags initialized before IAP startup.
+- Use bounded catalog startup slice loading with warmup limit guardrails.
+- Harden IAP pending/restore inconsistency transitions and tie release sign-off to CI evidence.

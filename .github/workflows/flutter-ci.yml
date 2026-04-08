@@ -80,6 +80,16 @@ jobs:
       - name: Catalog contract tests
         run: flutter test test/data/catalog/catalog_schema_validation_test.dart test/data/catalog/catalog_loader_compatibility_test.dart
 
+      - name: Phase 5 growth and IAP reliability contracts
+        run: >
+          flutter test
+          test/data/catalog/catalog_growth_loading_test.dart
+          test/data/catalog/catalog_startup_budget_test.dart
+          test/config/feature_flag_service_test.dart
+          test/startup/feature_flag_bootstrap_test.dart
+          test/services/iap/iap_service_reliability_test.dart
+          test/startup/iap_startup_restore_reconciliation_test.dart
+
       - name: Stage marker
         run: echo "unit-widget completed"
 
