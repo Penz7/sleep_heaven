@@ -12,6 +12,7 @@ import '../../../data/repositories/sound_repository.dart';
 import '../../../routes/app_routes.dart';
 
 class PlayerController extends GetxController with WidgetsBindingObserver {
+  static const String _ownerId = 'player_controller';
   final SoundRepository _repository = Get.find<SoundRepository>();
   late final SleepAudioHandler _handler;
 
@@ -29,6 +30,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   Timer? _timerCountdown;
 
   AudioPlayer get player => _player;
+  int? _ownershipToken;
 
   @override
   void onInit() {
@@ -118,8 +120,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   Future<void> play() async {
     if (currentSound.value == null) return;
     // Đăng ký controller này làm chủ notification khi bắt đầu phát
-    _handler.onPlayRequested = play;
-    _handler.onPauseRequested = pause;
+    _ownershipToken = _handler.acquireOwnership(
+      ownerId: _ownerId,
+      onPlayRequested: _playFromRemote,
+      onPauseRequested: _pauseFromRemote,
+    );
     // Không await: với LoopMode.one, play() chỉ resolve khi bị interrupt (loop vô hạn).
     // Nếu await thì _startTimerIfSet() sẽ không bao giờ được gọi.
     _player.play(); // ignore: unawaited_futures
@@ -131,6 +136,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _cancelTimers();
   }
 
+  void _playFromRemote() {
+    play();
+  }
+
+  void _pauseFromRemote() {
+    pause();
+  }
+
   Future<void> stop() async {
     await _player.stop();
     _cancelTimers();
@@ -138,6 +151,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _handler.clearTimer(_player.duration);
     remainingTime.value = Duration.zero;
     timerMinutes.value = 0;
+    _releaseOwnership();
   }
 
   Future<void> setVolume(double v) async {
@@ -215,7 +229,17 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   void onClose() {
     WidgetsBinding.instance.removeObserver(this);
     _cancelTimers();
+    _releaseOwnership();
     _player.dispose();
     super.onClose();
+  }
+
+  void _releaseOwnership() {
+    final int? token = _ownershipToken;
+    if (token == null) {
+      return;
+    }
+    _handler.releaseOwnership(ownerId: _ownerId, token: token);
+    _ownershipToken = null;
   }
 }

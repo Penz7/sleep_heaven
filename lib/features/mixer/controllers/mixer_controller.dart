@@ -11,6 +11,7 @@ import '../../../data/repositories/sound_repository.dart';
 import '../../../routes/app_routes.dart';
 
 class MixerController extends GetxController {
+  static const String _ownerId = 'mixer_controller';
   final SoundRepository _repository = Get.find<SoundRepository>();
   late final SleepAudioHandler _handler;
 
@@ -26,6 +27,7 @@ class MixerController extends GetxController {
   final Map<String, StreamSubscription<bool>> _playingSubscriptions = {};
 
   bool get canAddTrack => tracks.length < maxTracks;
+  int? _ownershipToken;
 
   @override
   void onInit() {
@@ -144,8 +146,11 @@ class MixerController extends GetxController {
       avAudioSessionMode: AVAudioSessionMode.defaultMode,
     ));
     // Đăng ký mixer làm chủ notification khi bắt đầu phát
-    _handler.onPlayRequested = playAll;
-    _handler.onPauseRequested = pauseAll;
+    _ownershipToken = _handler.acquireOwnership(
+      ownerId: _ownerId,
+      onPlayRequested: _playAllFromRemote,
+      onPauseRequested: _pauseAllFromRemote,
+    );
     _handler.setNowPlaying(
       id: 'mixer',
       title: 'Sleep Heaven - Mixer',
@@ -161,6 +166,14 @@ class MixerController extends GetxController {
     for (final track in tracks.values) {
       await track.player.pause();
     }
+  }
+
+  void _playAllFromRemote() {
+    playAll();
+  }
+
+  void _pauseAllFromRemote() {
+    pauseAll();
   }
 
   Future<void> stopAll() async {
@@ -180,7 +193,17 @@ class MixerController extends GetxController {
       track.player.dispose();
     }
     tracks.clear();
+    _releaseOwnership();
     super.onClose();
+  }
+
+  void _releaseOwnership() {
+    final int? token = _ownershipToken;
+    if (token == null) {
+      return;
+    }
+    _handler.releaseOwnership(ownerId: _ownerId, token: token);
+    _ownershipToken = null;
   }
 }
 
