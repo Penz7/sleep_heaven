@@ -687,12 +687,12 @@ class _ExpandedBubblePanel extends StatelessWidget {
         width: 244,
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
         decoration: BoxDecoration(
-          color: const Color(0xFF161824).withOpacity(0.88),
+          color: const Color(0xFF161824).withValues(alpha: 0.88),
           borderRadius: BorderRadius.circular(26),
-          border: Border.all(color: Colors.white.withOpacity(0.14)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.14)),
           boxShadow: <BoxShadow>[
             BoxShadow(
-              color: Colors.black.withOpacity(0.32),
+              color: Colors.black.withValues(alpha: 0.32),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
@@ -721,7 +721,7 @@ class _ActionChip extends StatelessWidget {
       label: semanticLabel,
       button: true,
       child: Material(
-        color: Colors.white.withOpacity(0.12),
+        color: Colors.white.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           onTap: onTap,
@@ -757,15 +757,15 @@ class _BubbleDisc extends StatelessWidget {
         shape: BoxShape.circle,
         gradient: LinearGradient(
           colors: <Color>[
-            Colors.deepPurpleAccent.withOpacity(0.92),
-            Colors.blueAccent.withOpacity(0.92),
+            Colors.deepPurpleAccent.withValues(alpha: 0.92),
+            Colors.blueAccent.withValues(alpha: 0.92),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: Colors.blueAccent.withOpacity(0.36),
+            color: Colors.blueAccent.withValues(alpha: 0.36),
             blurRadius: 18,
             spreadRadius: 1,
           ),
@@ -787,8 +787,8 @@ class _BubbleDisc extends StatelessWidget {
               height: size * 0.66,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.black.withOpacity(0.30),
-                border: Border.all(color: Colors.white.withOpacity(0.3)),
+                color: Colors.black.withValues(alpha: 0.30),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
               ),
             ),
             Container(
