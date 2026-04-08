@@ -12,6 +12,7 @@ class PlayerView extends GetView<PlayerController> {
 
   @override
   Widget build(BuildContext context) {
+    controller.syncRouteArguments(Get.arguments);
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: AppColors.backgroundDark,

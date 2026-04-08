@@ -20,6 +20,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   final Rx<SoundModel?> currentSound = Rx<SoundModel?>(null);
   final RxBool isPlaying = false.obs;
+  final RxBool hasActiveSession = false.obs;
   final RxDouble volume = 1.0.obs;
   final RxInt timerMinutes = 0.obs;
   final Rx<Duration> remainingTime = Duration.zero.obs;
@@ -28,6 +29,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   // iOS throttle Dart Timer trong background/lock screen.
   DateTime? _scheduledStopAt;
   Timer? _timerCountdown;
+  StreamSubscription<bool>? _playingSubscription;
+  StreamSubscription<double>? _volumeSubscription;
 
   AudioPlayer get player => _player;
   int? _ownershipToken;
@@ -43,6 +46,16 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (args is SoundModel) {
       loadSound(args);
     }
+  }
+
+  void syncRouteArguments(Object? args) {
+    if (args is! SoundModel) {
+      return;
+    }
+    if (currentSound.value?.id == args.id) {
+      return;
+    }
+    loadSound(args);
   }
 
   /// Kiểm tra khi app resume từ background: nếu timer đã hết trong lúc background thì dừng ngay
@@ -70,8 +83,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void _listenToPlayer() {
-    _player.playingStream.listen((playing) {
+    _playingSubscription = _player.playingStream.listen((playing) {
       isPlaying.value = playing;
+      if (playing) {
+        hasActiveSession.value = true;
+      }
       // Khi timer đang hoạt động, dùng timer-elapsed position để lock screen không bị drift.
       // Khi không có timer, dùng audio file position bình thường.
       _handler.setPlaybackState(
@@ -79,7 +95,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         position: _timerElapsedPosition(),
       );
     });
-    _player.volumeStream.listen((v) => volume.value = v);
+    _volumeSubscription = _player.volumeStream.listen((v) => volume.value = v);
   }
 
   /// Vị trí hiệu quả cho lock screen:
@@ -102,10 +118,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       return;
     }
     await _player.stop();
-    currentSound.value = sound;
     try {
       await _player.setAsset(sound.assetPath);
       await _player.setLoopMode(LoopMode.one);
+      currentSound.value = sound;
       // Cập nhật metadata notification khi load sound mới.
       // Truyền duration để iOS hiển thị đúng thanh tiến trình.
       _handler.setNowPlaying(
@@ -154,6 +170,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     remainingTime.value = Duration.zero;
     timerMinutes.value = 0;
     _releaseOwnership();
+    hasActiveSession.value = false;
   }
 
   Future<void> setVolume(double v) async {
@@ -232,8 +249,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   void onClose() {
     WidgetsBinding.instance.removeObserver(this);
     _cancelTimers();
+    _playingSubscription?.cancel();
+    _volumeSubscription?.cancel();
     _releaseOwnership();
-    _player.dispose();
+    _player.dispose(); // ignore: discarded_futures
     super.onClose();
   }
 

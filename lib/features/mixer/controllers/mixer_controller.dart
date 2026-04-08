@@ -22,6 +22,7 @@ class MixerController extends GetxController {
 
   // Observable được cập nhật khi bất kỳ player nào thay đổi trạng thái
   final RxBool isPlayingRx = false.obs;
+  final RxBool hasActiveSession = false.obs;
 
   // Lưu subscription của từng player để hủy khi remove track
   final Map<String, StreamSubscription<bool>> _playingSubscriptions = {};
@@ -80,7 +81,7 @@ class MixerController extends GetxController {
       }
     } catch (e) {
       Get.snackbar('Error', 'Could not load: $e');
-      player.dispose();
+      await player.dispose();
     }
   }
 
@@ -118,7 +119,7 @@ class MixerController extends GetxController {
       }
     } catch (e) {
       Get.snackbar('Error', 'Could not load file: $e');
-      player.dispose();
+      await player.dispose();
     }
   }
 
@@ -128,7 +129,7 @@ class MixerController extends GetxController {
 
     final track = tracks[soundId];
     if (track != null) {
-      track.player.dispose();
+      await track.player.dispose();
       tracks.remove(soundId);
     }
 
@@ -144,6 +145,9 @@ class MixerController extends GetxController {
   }
 
   Future<void> playAll() async {
+    if (tracks.isEmpty) {
+      return;
+    }
     final session = await AudioSession.instance;
     await session.configure(
       const AudioSessionConfiguration(
@@ -167,6 +171,7 @@ class MixerController extends GetxController {
       track.player
           .play(); // Không await - play() resolve khi playback kết thúc (loop = vô hạn)
     }
+    hasActiveSession.value = true;
   }
 
   Future<void> pauseAll() async {
@@ -188,6 +193,10 @@ class MixerController extends GetxController {
       await track.player.pause();
       await track.player.seek(Duration.zero);
     }
+    isPlayingRx.value = false;
+    hasActiveSession.value = false;
+    _handler.setPlaybackState(playing: false, position: Duration.zero);
+    _releaseOwnership();
   }
 
   @override
@@ -196,8 +205,8 @@ class MixerController extends GetxController {
       sub.cancel();
     }
     _playingSubscriptions.clear();
-    for (final track in tracks.values) {
-      track.player.dispose();
+    for (final MixerTrack track in tracks.values) {
+      track.player.dispose(); // ignore: discarded_futures
     }
     tracks.clear();
     _releaseOwnership();
