@@ -3,9 +3,10 @@ import 'package:audio_service/audio_service.dart';
 /// AudioHandler quản lý notification và lock screen controls.
 /// Nhận callback từ controller đang active để điều khiển audio thực tế.
 class SleepAudioHandler extends BaseAudioHandler {
-  /// Callback được đăng ký bởi controller hiện đang sở hữu notification
-  void Function()? onPlayRequested;
-  void Function()? onPauseRequested;
+  String? _activeOwner;
+  int _ownershipToken = 0;
+  void Function()? _onPlayRequested;
+  void Function()? _onPauseRequested;
 
   String? _originalArtist;
 
@@ -80,14 +81,42 @@ class SleepAudioHandler extends BaseAudioHandler {
   }
 
   @override
-  Future<void> play() async => onPlayRequested?.call();
+  Future<void> play() async => _onPlayRequested?.call();
 
   @override
-  Future<void> pause() async => onPauseRequested?.call();
+  Future<void> pause() async => _onPauseRequested?.call();
 
   @override
   Future<void> stop() async {
-    onPauseRequested?.call();
+    _onPauseRequested?.call();
     setPlaybackState(playing: false);
+  }
+
+  int acquireOwnership({
+    required String ownerId,
+    required void Function() onPlayRequested,
+    required void Function() onPauseRequested,
+  }) {
+    _ownershipToken += 1;
+    _activeOwner = ownerId;
+    _onPlayRequested = onPlayRequested;
+    _onPauseRequested = onPauseRequested;
+    return _ownershipToken;
+  }
+
+  void releaseOwnership({
+    required String ownerId,
+    required int token,
+  }) {
+    if (_activeOwner != ownerId || token != _ownershipToken) {
+      return;
+    }
+    _activeOwner = null;
+    _onPlayRequested = null;
+    _onPauseRequested = null;
+  }
+
+  bool isOwnerActive(String ownerId, int token) {
+    return _activeOwner == ownerId && token == _ownershipToken;
   }
 }
