@@ -9,6 +9,7 @@ class CatalogLoader {
   static const String catalogAssetPath = 'assets/catalog/sound_catalog.v1.json';
   static const String schemaAssetPath =
       'assets/catalog/sound_catalog.schema.json';
+  static const int defaultStartupLimit = 12;
 
   Future<CatalogLoadResult> loadFromAssets({
     String catalogPath = catalogAssetPath,
@@ -17,6 +18,20 @@ class CatalogLoader {
     final String rawCatalog = await rootBundle.loadString(catalogPath);
     final String rawSchema = await rootBundle.loadString(schemaPath);
     return loadFromRaw(rawCatalog: rawCatalog, rawSchema: rawSchema);
+  }
+
+  Future<CatalogLoadResult> loadStartupSliceFromAssets({
+    String catalogPath = catalogAssetPath,
+    String schemaPath = schemaAssetPath,
+    int startupLimit = defaultStartupLimit,
+  }) async {
+    final String rawCatalog = await rootBundle.loadString(catalogPath);
+    final String rawSchema = await rootBundle.loadString(schemaPath);
+    return loadStartupSliceFromRaw(
+      rawCatalog: rawCatalog,
+      rawSchema: rawSchema,
+      startupLimit: startupLimit,
+    );
   }
 
   Future<CatalogLoadResult> loadFromRaw({
@@ -46,6 +61,22 @@ class CatalogLoader {
 
     _assertUniqueIds(decoded);
     return CatalogLoadResult(version: version, sounds: decoded);
+  }
+
+  Future<CatalogLoadResult> loadStartupSliceFromRaw({
+    required String rawCatalog,
+    required String rawSchema,
+    int startupLimit = defaultStartupLimit,
+  }) async {
+    final CatalogLoadResult full = await loadFromRaw(
+      rawCatalog: rawCatalog,
+      rawSchema: rawSchema,
+    );
+    final int boundedLimit = startupLimit < 1 ? 1 : startupLimit;
+    final List<SoundModel> bounded = full.sounds
+        .take(boundedLimit)
+        .toList(growable: false);
+    return CatalogLoadResult(version: full.version, sounds: bounded);
   }
 
   void _assertUniqueIds(List<SoundModel> sounds) {

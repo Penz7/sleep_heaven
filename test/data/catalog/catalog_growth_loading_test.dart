@@ -20,7 +20,7 @@ String _buildCatalogJson({required int count}) {
     growable: false,
   );
   return jsonEncode(<String, Object>{
-    'version': 'v-growth',
+    'version': '1.0.0',
     'sounds': sounds,
   });
 }
@@ -42,7 +42,7 @@ void main() {
       );
 
       expect(result.sounds.length, equals(12));
-      expect(result.version, equals('v-growth'));
+      expect(result.version, equals('1.0.0'));
     });
 
     test('fallback compatibility keeps typed sound models usable', () async {
