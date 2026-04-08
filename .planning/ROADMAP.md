@@ -9,7 +9,7 @@
 ## Phases
 
 - [x] **Phase 1: Security and Release Hardening** - Eliminate secret-leak risk and harden release pipeline foundations.
-- [ ] **Phase 2: Reliability and Observability Baseline** - Add regression prevention, crash visibility, and deterministic app startup behavior.
+- [x] **Phase 2: Reliability and Observability Baseline** - Add regression prevention, crash visibility, and deterministic app startup behavior.
 - [ ] **Phase 3: Performance and Architecture Refactor** - Remove known jank paths and reduce fragile coupling in playback/mixer flow.
 - [ ] **Phase 4: Test and CI Expansion** - Scale automated quality gates from smoke tests to integration confidence.
 - [ ] **Phase 5: Feature Growth Readiness (IAP + Catalog Evolution)** - Prepare safe feature expansion and post-v1 scaling patterns.
@@ -65,7 +65,14 @@ Plans:
 - Trigger synthetic handled/unhandled errors and verify telemetry ingestion.
 - Run deterministic reliability smoke suite on CI and local.
 - Execute manual scenario matrix for purchase restore and playback handoff.
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [x] `02-01-PLAN.md` - Build startup guardrails, domain error model, and telemetry baseline for fail-fast/fail-open reliability.
+  - Completed: `.planning/phases/02-reliability-and-observability-baseline/02-01-SUMMARY.md`
+- [x] `02-02-PLAN.md` - Add deterministic IAP 5-state reliability coverage and startup restore reconciliation for singleton `IAPService`.
+  - Completed: `.planning/phases/02-reliability-and-observability-baseline/02-02-SUMMARY.md`
+- [x] `02-03-PLAN.md` - Enforce single-owner audio handler handoff contract with player/mixer lifecycle contract tests.
+  - Completed: `.planning/phases/02-reliability-and-observability-baseline/02-03-SUMMARY.md`
 
 ### Phase 3: Performance and Architecture Refactor
 **Goal**: UI interactions stay smooth under realistic usage while reducing change-risk in large feature files.
@@ -200,7 +207,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Security and Release Hardening | 1/1 | Complete | 2026-04-08 |
-| 2. Reliability and Observability Baseline | 0/4 | Not started | - |
+| 2. Reliability and Observability Baseline | 3/3 | Complete | 2026-04-08 |
 | 3. Performance and Architecture Refactor | 0/4 | Not started | - |
 | 4. Test and CI Expansion | 0/3 | Not started | - |
 | 5. Feature Growth Readiness (IAP + Catalog Evolution) | 0/3 | Not started | - |

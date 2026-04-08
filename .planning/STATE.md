@@ -3,21 +3,21 @@
 ## Project Reference
 - **Core value**: Deliver a stable, secure, premium sleep-audio experience with reliable playback and monetization.
 - **Roadmap source**: `.planning/ROADMAP.md`
-- **Current focus**: Phase 1 - Security and Release Hardening
+- **Current focus**: Phase 3 - Performance and Architecture Refactor
 
 ## Current Position
-- **Current phase**: 1
-- **Current plan**: 01 completed
-- **Status**: Phase 1 Plan 01 complete
-- **Progress**: 20%
-- **Immediate next milestone**: Security baseline and CI secret scanning active
+- **Current phase**: 2
+- **Current plan**: 03 completed
+- **Status**: Phase 2 complete (Plans 01-03 executed)
+- **Progress**: 40%
+- **Immediate next milestone**: Begin Phase 3 performance and architecture refactor execution
 
 ## Performance Metrics Baseline
 - **Automated test maturity**: Baseline (signing contract + GetX/Hive/IAP bootstrap smoke)
 - **CI maturity**: `secret-scan` + `flutter-ci` (analyze, test, debug APK) on PR/push
-- **Observability maturity**: None detected
+- **Observability maturity**: Baseline established (Sentry adapter + startup/service capture)
 - **Security posture (repo/process)**: At risk due to signing secret handling process gaps
-- **Reliability confidence**: Low for IAP and audio lifecycle transitions
+- **Reliability confidence**: Medium-high for startup, IAP, and audio ownership contracts
 
 ## Accumulated Context
 
@@ -33,18 +33,16 @@
 
 ### Known High-Risk Areas
 - Secret leakage risk around signing configuration handling
-- Audio handler callback lifecycle coupling across controllers
-- IAP entitlement transition edge cases without sufficient automated coverage
-- No crash telemetry and no CI quality gates
+- Startup/performance regressions if new flows bypass startup coordinator conventions
+- Playback UI jank risk remains until Phase 3 list/layer profiling work
 
 ### Open Blockers
-- Default widget smoke test is failing due app bootstrap dependency setup and should be replaced by app-specific tests.
-- No production-grade error tracking
+- None for Phase 2 execution scope
 
 ## Session Continuity
-- **Last completed artifact**: `.planning/phases/01-security-and-release-hardening/01-01-SUMMARY.md`
+- **Last completed artifact**: `.planning/phases/02-reliability-and-observability-baseline/02-03-SUMMARY.md`
 - **Shipping**: `app_v2` pushed to `origin` (2026-04-08). Open PR: https://github.com/Penz7/sleep_heaven/compare/main...app_v2?expand=1 — `gh` CLI not installed locally; paste PR body from assistant message.
-- **Next action**: Create PR on GitHub; wait for `Flutter CI` + `Secret Scan` green; complete release log audit; re-run `/gsd-verifier`; then Phase 2 planning
+- **Next action**: Execute Phase 3 plans with profile-mode performance measurements and lazy-list refactors
 - **Execution rhythm**: Daily evidence-driven closeout (deliverable + validation check)
 
 ## Decision Log
@@ -53,3 +51,6 @@
 - Performance work is intentionally delayed until reliability baselines and observability exist.
 - Use env-first Android signing (`ANDROID_SIGNING_*`) with local untracked fallback (`key.properties.local`) for secure and reproducible release builds.
 - Use local pre-commit and CI `gitleaks` scanning with deterministic synthetic-secret verification and redacted output.
+- Lock telemetry provider behind `TelemetryProvider` and route all startup/service failures through `DomainError`.
+- Keep `IAPService` singleton contract intact while enforcing deterministic five-state and reconciliation behavior.
+- Enforce single-owner latest-wins callback ownership contract in `SleepAudioHandler` and dependent controllers.
