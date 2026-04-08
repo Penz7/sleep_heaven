@@ -15,16 +15,16 @@ class ActiveSoundsHeader extends StatelessWidget {
         Text(
           'ACTIVE SOUNDS',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w600,
-                letterSpacing: 1.4,
-                color: AppColors.accent,
-              ),
+            fontWeight: FontWeight.w600,
+            letterSpacing: 1.4,
+            color: AppColors.accent,
+          ),
         ),
         Text(
           '$playingCount playing',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.white54,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: Colors.white54),
         ),
       ],
     );

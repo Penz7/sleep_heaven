@@ -21,7 +21,8 @@ class MixerTrackCard extends StatelessWidget {
     required Widget child,
     EdgeInsetsGeometry? padding,
     double borderRadius,
-  }) glassBuilder;
+  })
+  glassBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -63,17 +64,14 @@ class MixerTrackCard extends StatelessWidget {
                           children: <Widget>[
                             Text(
                               title,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
+                              style: Theme.of(context).textTheme.titleMedium
                                   ?.copyWith(fontWeight: FontWeight.w600),
                             ),
                             const SizedBox(height: 2),
                             Text(
                               category,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Colors.white54,
-                                  ),
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: Colors.white54),
                             ),
                           ],
                         ),
@@ -88,48 +86,46 @@ class MixerTrackCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            Obx(
-              () {
-                final int volume = (track.volume.value * 100).round() as int;
-                return Row(
-                  children: <Widget>[
-                    Icon(
-                      volume > 0 ? Icons.volume_up : Icons.volume_mute,
-                      size: 18,
-                      color: volume > 0 ? AppColors.accent : Colors.white54,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: SliderTheme(
-                        data: SliderTheme.of(context).copyWith(
-                          trackHeight: 4,
-                          thumbShape: const RoundSliderThumbShape(
-                            enabledThumbRadius: 8,
-                          ),
-                        ),
-                        child: Slider(
-                          value: track.volume.value as double,
-                          onChanged: onVolumeChanged,
-                          activeColor: AppColors.accent,
-                          inactiveColor: Colors.white12,
+            Obx(() {
+              final int volume = (track.volume.value * 100).round() as int;
+              return Row(
+                children: <Widget>[
+                  Icon(
+                    volume > 0 ? Icons.volume_up : Icons.volume_mute,
+                    size: 18,
+                    color: volume > 0 ? AppColors.accent : Colors.white54,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        trackHeight: 4,
+                        thumbShape: const RoundSliderThumbShape(
+                          enabledThumbRadius: 8,
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    SizedBox(
-                      width: 40,
-                      child: Text(
-                        '$volume%',
-                        textAlign: TextAlign.right,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.white70,
-                            ),
+                      child: Slider(
+                        value: track.volume.value as double,
+                        onChanged: onVolumeChanged,
+                        activeColor: AppColors.accent,
+                        inactiveColor: Colors.white12,
                       ),
                     ),
-                  ],
-                );
-              },
-            ),
+                  ),
+                  const SizedBox(width: 8),
+                  SizedBox(
+                    width: 40,
+                    child: Text(
+                      '$volume%',
+                      textAlign: TextAlign.right,
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: Colors.white70),
+                    ),
+                  ),
+                ],
+              );
+            }),
           ],
         ),
       ),

@@ -10,10 +10,12 @@ void main() {
 
   group('catalog schema validation', () {
     test('catalog json is schema-valid', () async {
-      final String rawCatalog =
-          await rootBundle.loadString(CatalogLoader.catalogAssetPath);
-      final String rawSchema =
-          await rootBundle.loadString(CatalogLoader.schemaAssetPath);
+      final String rawCatalog = await rootBundle.loadString(
+        CatalogLoader.catalogAssetPath,
+      );
+      final String rawSchema = await rootBundle.loadString(
+        CatalogLoader.schemaAssetPath,
+      );
 
       final CatalogLoader loader = CatalogLoader();
       final CatalogLoadResult result = await loader.loadFromRaw(
@@ -26,11 +28,14 @@ void main() {
     });
 
     test('duplicate IDs fail validation guardrails', () async {
-      final String rawSchema =
-          await rootBundle.loadString(CatalogLoader.schemaAssetPath);
-      final Map<String, dynamic> catalog = jsonDecode(
-        await rootBundle.loadString(CatalogLoader.catalogAssetPath),
-      ) as Map<String, dynamic>;
+      final String rawSchema = await rootBundle.loadString(
+        CatalogLoader.schemaAssetPath,
+      );
+      final Map<String, dynamic> catalog =
+          jsonDecode(
+                await rootBundle.loadString(CatalogLoader.catalogAssetPath),
+              )
+              as Map<String, dynamic>;
 
       final List<dynamic> sounds = catalog['sounds'] as List<dynamic>;
       final Map<String, dynamic> first = Map<String, dynamic>.from(

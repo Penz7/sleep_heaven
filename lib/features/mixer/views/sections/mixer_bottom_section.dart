@@ -29,8 +29,7 @@ class MixerBottomSection extends StatelessWidget {
             () => GlassContainer(
               tier: MixerPerfTier.capable,
               borderRadius: 20,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               child: Row(
                 children: <Widget>[
                   Container(
@@ -61,16 +60,13 @@ class MixerBottomSection extends StatelessWidget {
                       children: <Widget>[
                         Text(
                           'Deep Sleep Mix',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
+                          style: Theme.of(context).textTheme.bodyMedium
                               ?.copyWith(fontWeight: FontWeight.w600),
                         ),
                         Text(
                           controller.isPlayingRx.value ? 'Active' : 'Paused',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Colors.white54,
-                              ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: Colors.white54),
                         ),
                       ],
                     ),

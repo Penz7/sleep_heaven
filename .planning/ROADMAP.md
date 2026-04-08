@@ -11,7 +11,7 @@
 - [x] **Phase 1: Security and Release Hardening** - Eliminate secret-leak risk and harden release pipeline foundations.
 - [x] **Phase 2: Reliability and Observability Baseline** - Add regression prevention, crash visibility, and deterministic app startup behavior.
 - [x] **Phase 3: Performance and Architecture Refactor** - Remove known jank paths and reduce fragile coupling in playback/mixer flow.
-- [ ] **Phase 4: Test and CI Expansion** - Scale automated quality gates from smoke tests to integration confidence.
+- [x] **Phase 4: Test and CI Expansion** - Scale automated quality gates from smoke tests to integration confidence.
 - [ ] **Phase 5: Feature Growth Readiness (IAP + Catalog Evolution)** - Prepare safe feature expansion and post-v1 scaling patterns.
 
 ## Phase Details
@@ -110,6 +110,7 @@ Plans:
 
 ### Phase 4: Test and CI Expansion
 **Goal**: Every merge is gated by meaningful automated checks that prevent regressions.
+**Requirements**: [P4-CI-01, P4-CI-02, P4-CI-03, P4-CI-04]
 **Depends on**: Phase 3
 **Estimated scope**: Medium (5-7 engineering days)
 **Primary risks**:
@@ -129,7 +130,14 @@ Plans:
 - Open test PRs with intentional failures to verify gate correctness.
 - Measure CI runtime and confirm acceptable feedback loop targets.
 - Confirm rerun stability of integration jobs.
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [x] `04-01-PLAN.md` - Split CI into fail-fast merge gates and nightly extended confidence lane with deterministic retry policy.
+  - Completed: `.planning/phases/04-test-and-ci-expansion/04-01-SUMMARY.md`
+- [x] `04-02-PLAN.md` - Expand test pyramid ownership with deterministic core unit/widget and integration smoke contracts.
+  - Completed: `.planning/phases/04-test-and-ci-expansion/04-02-SUMMARY.md`
+- [x] `04-03-PLAN.md` - Enforce core-module coverage thresholds with CI trend artifacts and baseline-aware ratchet policy.
+  - Completed: `.planning/phases/04-test-and-ci-expansion/04-03-SUMMARY.md`
 
 ### Phase 5: Feature Growth Readiness (IAP + Catalog Evolution)
 **Goal**: New premium and content features can be added safely without destabilizing core flows.
@@ -219,5 +227,5 @@ Plans:
 | 1. Security and Release Hardening | 1/1 | Complete | 2026-04-08 |
 | 2. Reliability and Observability Baseline | 3/3 | Complete | 2026-04-08 |
 | 3. Performance and Architecture Refactor | 4/4 | Complete | 2026-04-08 |
-| 4. Test and CI Expansion | 0/3 | Not started | - |
+| 4. Test and CI Expansion | 3/3 | Complete | 2026-04-08 |
 | 5. Feature Growth Readiness (IAP + Catalog Evolution) | 0/3 | Not started | - |

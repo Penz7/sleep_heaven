@@ -163,7 +163,8 @@ class MyApp extends StatelessWidget {
                 Align(
                   alignment: Alignment.topCenter,
                   child: DegradedBootNotice(
-                    message: bootState.result.message ?? 'Some services degraded.',
+                    message:
+                        bootState.result.message ?? 'Some services degraded.',
                   ),
                 ),
               ],

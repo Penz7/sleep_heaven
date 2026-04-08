@@ -25,26 +25,23 @@ Widget _buildList(List<String> ids) {
           final String id = ids[index];
           return MixerTrackCard(
             soundId: id,
-            track: _FakeTrack(
-              title: id,
-              categoryId: 'rain',
-              volume: 0.5.obs,
-            ),
+            track: _FakeTrack(title: id, categoryId: 'rain', volume: 0.5.obs),
             onRemove: () {},
             onVolumeChanged: (_) {},
-            glassBuilder: ({
-              required Widget child,
-              EdgeInsetsGeometry? padding,
-              double borderRadius = 16,
-            }) {
-              return Container(
-                padding: padding,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(borderRadius),
-                ),
-                child: child,
-              );
-            },
+            glassBuilder:
+                ({
+                  required Widget child,
+                  EdgeInsetsGeometry? padding,
+                  double borderRadius = 16,
+                }) {
+                  return Container(
+                    padding: padding,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(borderRadius),
+                    ),
+                    child: child,
+                  );
+                },
           );
         },
       ),

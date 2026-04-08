@@ -52,8 +52,8 @@ class ActiveSoundsSection extends GetView<MixerController> {
             }
 
             final int trackIndex = index - 2;
-            final MapEntry<String, MixerTrack> entry =
-                controller.tracks.entries.elementAt(trackIndex);
+            final MapEntry<String, MixerTrack> entry = controller.tracks.entries
+                .elementAt(trackIndex);
             return _AnimatedMixerTrackCard(
               key: ValueKey<String>(entry.key),
               soundId: entry.key,
@@ -84,7 +84,8 @@ class _AnimatedMixerTrackCard extends StatefulWidget {
   final ValueChanged<double> onVolumeChanged;
 
   @override
-  State<_AnimatedMixerTrackCard> createState() => _AnimatedMixerTrackCardState();
+  State<_AnimatedMixerTrackCard> createState() =>
+      _AnimatedMixerTrackCardState();
 }
 
 class _AnimatedMixerTrackCardState extends State<_AnimatedMixerTrackCard> {
@@ -130,12 +131,12 @@ class _AnimatedMixerTrackCardState extends State<_AnimatedMixerTrackCard> {
           track: widget.track,
           onRemove: _handleRemove,
           onVolumeChanged: widget.onVolumeChanged,
-          glassBuilder: ({
-            required Widget child,
-            EdgeInsetsGeometry? padding,
-            double borderRadius = 16,
-          }) =>
-              GlassContainer(
+          glassBuilder:
+              ({
+                required Widget child,
+                EdgeInsetsGeometry? padding,
+                double borderRadius = 16,
+              }) => GlassContainer(
                 tier: MixerPerfTier.capable,
                 padding: padding,
                 borderRadius: borderRadius,

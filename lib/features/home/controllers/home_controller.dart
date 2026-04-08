@@ -11,7 +11,8 @@ class HomeController extends GetxController {
   List<SoundModel> getSoundsByCategory(String categoryId) =>
       _repository.getSoundsByCategory(categoryId);
 
-  List<SoundModel> get featuredSounds => _repository.getAllSounds().take(6).toList();
+  List<SoundModel> get featuredSounds =>
+      _repository.getAllSounds().take(6).toList();
 
   bool isFavorite(String soundId) => _repository.isFavorite(soundId);
 

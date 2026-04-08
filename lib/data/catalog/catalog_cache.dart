@@ -10,7 +10,10 @@ class CatalogCache {
 
   bool get hasSnapshot => _sounds != null;
 
-  void setSnapshot({required String version, required List<SoundModel> sounds}) {
+  void setSnapshot({
+    required String version,
+    required List<SoundModel> sounds,
+  }) {
     _version = version;
     _sounds = List<SoundModel>.unmodifiable(sounds);
   }

@@ -51,10 +51,12 @@ class MixerController extends GetxController {
     if (tracks.length >= maxTracks) return;
 
     final session = await AudioSession.instance;
-    await session.configure(const AudioSessionConfiguration(
-      avAudioSessionCategory: AVAudioSessionCategory.playback,
-      avAudioSessionMode: AVAudioSessionMode.defaultMode,
-    ));
+    await session.configure(
+      const AudioSessionConfiguration(
+        avAudioSessionCategory: AVAudioSessionCategory.playback,
+        avAudioSessionMode: AVAudioSessionMode.defaultMode,
+      ),
+    );
 
     final player = AudioPlayer();
     try {
@@ -89,10 +91,12 @@ class MixerController extends GetxController {
     if (tracks.length >= maxTracks) return;
 
     final session = await AudioSession.instance;
-    await session.configure(const AudioSessionConfiguration(
-      avAudioSessionCategory: AVAudioSessionCategory.playback,
-      avAudioSessionMode: AVAudioSessionMode.defaultMode,
-    ));
+    await session.configure(
+      const AudioSessionConfiguration(
+        avAudioSessionCategory: AVAudioSessionCategory.playback,
+        avAudioSessionMode: AVAudioSessionMode.defaultMode,
+      ),
+    );
 
     final player = AudioPlayer();
     try {
@@ -141,10 +145,12 @@ class MixerController extends GetxController {
 
   Future<void> playAll() async {
     final session = await AudioSession.instance;
-    await session.configure(const AudioSessionConfiguration(
-      avAudioSessionCategory: AVAudioSessionCategory.playback,
-      avAudioSessionMode: AVAudioSessionMode.defaultMode,
-    ));
+    await session.configure(
+      const AudioSessionConfiguration(
+        avAudioSessionCategory: AVAudioSessionCategory.playback,
+        avAudioSessionMode: AVAudioSessionMode.defaultMode,
+      ),
+    );
     // Đăng ký mixer làm chủ notification khi bắt đầu phát
     _ownershipToken = _handler.acquireOwnership(
       ownerId: _ownerId,
@@ -158,7 +164,8 @@ class MixerController extends GetxController {
     );
     for (final track in tracks.values) {
       await track.player.setLoopMode(LoopMode.one);
-      track.player.play(); // Không await - play() resolve khi playback kết thúc (loop = vô hạn)
+      track.player
+          .play(); // Không await - play() resolve khi playback kết thúc (loop = vô hạn)
     }
   }
 

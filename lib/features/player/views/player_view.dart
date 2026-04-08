@@ -116,7 +116,13 @@ class _TimerChips extends StatelessWidget {
 
   final PlayerController ctrl;
 
-  static const _options = [(1, '1m'), (15, '15m'), (30, '30m'), (45, '45m'), (60, '1h')];
+  static const _options = [
+    (1, '1m'),
+    (15, '15m'),
+    (30, '30m'),
+    (45, '45m'),
+    (60, '1h'),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -231,7 +237,8 @@ class _CircularVisualizer extends StatelessWidget {
               ),
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
-                child: ctrl.timerMinutes.value > 0 &&
+                child:
+                    ctrl.timerMinutes.value > 0 &&
                         ctrl.remainingTime.value > Duration.zero
                     ? _TimerStatusContent(
                         key: const ValueKey('timer'),
@@ -289,10 +296,7 @@ class _TimerStatusContent extends StatelessWidget {
               const SizedBox(width: 4),
               Text(
                 isPlaying ? 'Playing' : 'Paused',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.white54,
-                ),
+                style: TextStyle(fontSize: 12, color: Colors.white54),
               ),
             ],
           ),

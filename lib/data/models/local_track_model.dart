@@ -11,12 +11,13 @@ class LocalTrackModel {
   final String filePath;
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'filePath': filePath,
-      };
+    'id': id,
+    'title': title,
+    'filePath': filePath,
+  };
 
-  factory LocalTrackModel.fromJson(Map<String, dynamic> json) => LocalTrackModel(
+  factory LocalTrackModel.fromJson(Map<String, dynamic> json) =>
+      LocalTrackModel(
         id: json['id'] as String,
         title: json['title'] as String,
         filePath: json['filePath'] as String,

@@ -88,10 +88,12 @@ class IAPService extends GetxService {
     IapStoreClient? storeClient,
     SecureStoreClient? secureStore,
     ConnectivityClient? connectivityClient,
-  })  : _storeClient = storeClient ?? InAppPurchaseStoreClient(InAppPurchase.instance),
-        _secureStore = secureStore ??
-            const FlutterSecureStoreClient(FlutterSecureStorage()),
-        _connectivityClient = connectivityClient ?? DefaultConnectivityClient();
+  }) : _storeClient =
+           storeClient ?? InAppPurchaseStoreClient(InAppPurchase.instance),
+       _secureStore =
+           secureStore ??
+           const FlutterSecureStoreClient(FlutterSecureStorage()),
+       _connectivityClient = connectivityClient ?? DefaultConnectivityClient();
 
   final IapStoreClient _storeClient;
   final SecureStoreClient _secureStore;
@@ -127,7 +129,8 @@ class IAPService extends GetxService {
     _purchaseSubscription = _storeClient.purchaseStream.listen(
       _onPurchaseUpdate,
       onDone: () => _purchaseSubscription?.cancel(),
-      onError: (Object e) => debugPrint('[IAPService] purchaseStream error: $e'),
+      onError: (Object e) =>
+          debugPrint('[IAPService] purchaseStream error: $e'),
     );
 
     // Tự động restore nếu có mạng và store available
@@ -154,7 +157,9 @@ class IAPService extends GetxService {
   /// Lấy thông tin sản phẩm từ store (dùng để hiển thị giá thực tế)
   Future<ProductDetails?> getPremiumProduct() async {
     try {
-      final response = await _storeClient.queryProductDetails({_premiumProductId});
+      final response = await _storeClient.queryProductDetails({
+        _premiumProductId,
+      });
       if (response.error != null) {
         debugPrint('[IAPService] queryProductDetails error: ${response.error}');
       }
@@ -187,10 +192,11 @@ class IAPService extends GetxService {
   }
 
   Future<void> attemptStartupReconciliation() async {
-    final List<ConnectivityResult> connectivity =
-        await _connectivityClient.checkConnectivity();
-    final bool isOnline =
-        connectivity.any((ConnectivityResult r) => r != ConnectivityResult.none);
+    final List<ConnectivityResult> connectivity = await _connectivityClient
+        .checkConnectivity();
+    final bool isOnline = connectivity.any(
+      (ConnectivityResult r) => r != ConnectivityResult.none,
+    );
     if (!isOnline) {
       hasPendingReconciliation.value = true;
       return;

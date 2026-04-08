@@ -61,10 +61,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     final session = await AudioSession.instance;
     // Không dùng mixWithOthers: app sẽ lấy audio focus độc quyền,
     // giúp iOS nhận diện đúng là "Now Playing" app trên Lock Screen / Control Center.
-    await session.configure(const AudioSessionConfiguration(
-      avAudioSessionCategory: AVAudioSessionCategory.playback,
-      avAudioSessionMode: AVAudioSessionMode.defaultMode,
-    ));
+    await session.configure(
+      const AudioSessionConfiguration(
+        avAudioSessionCategory: AVAudioSessionCategory.playback,
+        avAudioSessionMode: AVAudioSessionMode.defaultMode,
+      ),
+    );
   }
 
   void _listenToPlayer() {
@@ -178,7 +180,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _cancelTimers();
     if (timerMinutes.value <= 0) return;
 
-    _scheduledStopAt = DateTime.now().add(Duration(minutes: timerMinutes.value));
+    _scheduledStopAt = DateTime.now().add(
+      Duration(minutes: timerMinutes.value),
+    );
     final timerDuration = Duration(minutes: timerMinutes.value);
     remainingTime.value = timerDuration;
 
@@ -201,7 +205,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         remainingTime.value = remaining;
         // Cập nhật artist field với countdown và position với elapsed time
         _handler.updateTimerNotification(remaining);
-        _handler.setPlaybackState(playing: true, position: timerDuration - remaining);
+        _handler.setPlaybackState(
+          playing: true,
+          position: timerDuration - remaining,
+        );
       }
     });
   }
@@ -214,11 +221,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   Future<void> _fadeOutAndStop() async {
     final currentVol = _player.volume;
-    await AudioHelpers.fadeOut(
-      currentVol,
-      3000,
-      (v) => _player.setVolume(v),
-    );
+    await AudioHelpers.fadeOut(currentVol, 3000, (v) => _player.setVolume(v));
     await stop();
     // Restore volume về 1.0 sau khi dừng, tránh lần phát tiếp theo bị tắt tiếng
     await _player.setVolume(1.0);

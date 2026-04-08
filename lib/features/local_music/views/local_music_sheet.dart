@@ -7,17 +7,16 @@ import '../controllers/local_music_controller.dart';
 
 /// Bottom sheet hiển thị danh sách local tracks và nút thêm mới
 class LocalMusicSheet extends GetView<LocalMusicController> {
-  const LocalMusicSheet({
-    super.key,
-    this.onTrackSelected,
-  });
+  const LocalMusicSheet({super.key, this.onTrackSelected});
 
   final void Function(LocalTrackModel track)? onTrackSelected;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.5),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.5,
+      ),
       decoration: const BoxDecoration(
         color: AppColors.cardDark,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -71,11 +70,11 @@ class LocalMusicSheet extends GetView<LocalMusicController> {
                 itemBuilder: (context, index) {
                   final track = controller.localTracks[index];
                   return ListTile(
-                    leading: const Icon(Icons.audio_file, color: AppColors.accent),
-                    title: Text(
-                      track.title,
-                      overflow: TextOverflow.ellipsis,
+                    leading: const Icon(
+                      Icons.audio_file,
+                      color: AppColors.accent,
                     ),
+                    title: Text(track.title, overflow: TextOverflow.ellipsis),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -84,7 +83,10 @@ class LocalMusicSheet extends GetView<LocalMusicController> {
                           onPressed: () => onTrackSelected?.call(track),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.delete_outline, color: Colors.white54),
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            color: Colors.white54,
+                          ),
                           onPressed: () => controller.removeTrack(track.id),
                         ),
                       ],

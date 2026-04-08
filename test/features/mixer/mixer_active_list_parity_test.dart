@@ -23,9 +23,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: Scaffold(
-          body: ActiveSoundsHeader(playingCount: 2),
-        ),
+        home: Scaffold(body: ActiveSoundsHeader(playingCount: 2)),
       ),
     );
 
@@ -55,19 +53,20 @@ void main() {
             onVolumeChanged: (double value) {
               changedVolume = value;
             },
-            glassBuilder: ({
-              required Widget child,
-              EdgeInsetsGeometry? padding,
-              double borderRadius = 16,
-            }) {
-              return Container(
-                padding: padding,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(borderRadius),
-                ),
-                child: child,
-              );
-            },
+            glassBuilder:
+                ({
+                  required Widget child,
+                  EdgeInsetsGeometry? padding,
+                  double borderRadius = 16,
+                }) {
+                  return Container(
+                    padding: padding,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(borderRadius),
+                    ),
+                    child: child,
+                  );
+                },
           ),
         ),
       ),

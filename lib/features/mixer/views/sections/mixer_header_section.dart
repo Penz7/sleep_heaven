@@ -34,9 +34,9 @@ class MixerHeaderSection extends StatelessWidget {
           Text(
             AppStrings.mixer,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
           ),
         ],
       ),

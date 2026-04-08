@@ -1,3 +1,6 @@
+@Tags(<String>['critical-smoke'])
+library;
+
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -54,55 +57,75 @@ class _FakeConnectivityClient implements ConnectivityClient {
 }
 
 void main() {
-  test('offline startup does not grant entitlement and sets pending reconcile', () async {
-    final _FakeStoreClient storeClient = _FakeStoreClient();
-    final _FakeConnectivityClient connectivityClient =
-        _FakeConnectivityClient(<ConnectivityResult>[ConnectivityResult.none]);
-    final IAPService service = IAPService(
-      storeClient: storeClient,
-      secureStore: _FakeStore(),
-      connectivityClient: connectivityClient,
-    );
+  test(
+    'offline startup does not grant entitlement and sets pending reconcile',
+    () async {
+      final _FakeStoreClient storeClient = _FakeStoreClient();
+      final _FakeConnectivityClient connectivityClient =
+          _FakeConnectivityClient(<ConnectivityResult>[
+            ConnectivityResult.none,
+          ]);
+      final IAPService service = IAPService(
+        storeClient: storeClient,
+        secureStore: _FakeStore(),
+        connectivityClient: connectivityClient,
+      );
 
-    await service.attemptStartupReconciliation();
+      await service.attemptStartupReconciliation();
 
-    expect(service.isPremium.value, isFalse);
-    expect(service.hasPendingReconciliation.value, isTrue);
-    expect(storeClient.restoreCalls, equals(0));
-  });
+      expect(service.isPremium.value, isFalse);
+      expect(service.hasPendingReconciliation.value, isTrue);
+      expect(storeClient.restoreCalls, equals(0));
+    },
+    timeout: const Timeout(Duration(seconds: 10)),
+  );
 
-  test('online transition replays restore and reconciles pending state', () async {
-    final _FakeStoreClient storeClient = _FakeStoreClient();
-    final _FakeConnectivityClient connectivityClient =
-        _FakeConnectivityClient(<ConnectivityResult>[ConnectivityResult.none]);
-    final IAPService service = IAPService(
-      storeClient: storeClient,
-      secureStore: _FakeStore(),
-      connectivityClient: connectivityClient,
-    );
+  test(
+    'online transition replays restore and reconciles pending state',
+    () async {
+      final _FakeStoreClient storeClient = _FakeStoreClient();
+      final _FakeConnectivityClient connectivityClient =
+          _FakeConnectivityClient(<ConnectivityResult>[
+            ConnectivityResult.none,
+          ]);
+      final IAPService service = IAPService(
+        storeClient: storeClient,
+        secureStore: _FakeStore(),
+        connectivityClient: connectivityClient,
+      );
 
-    await service.attemptStartupReconciliation();
-    connectivityClient.results = <ConnectivityResult>[ConnectivityResult.wifi];
-    await service.attemptStartupReconciliation();
+      await service.attemptStartupReconciliation();
+      connectivityClient.results = <ConnectivityResult>[
+        ConnectivityResult.wifi,
+      ];
+      await service.attemptStartupReconciliation();
 
-    expect(service.hasPendingReconciliation.value, isFalse);
-    expect(storeClient.restoreCalls, equals(1));
-  });
+      expect(service.hasPendingReconciliation.value, isFalse);
+      expect(storeClient.restoreCalls, equals(1));
+    },
+    timeout: const Timeout(Duration(seconds: 10)),
+  );
 
-  test('repeated startup restore is idempotent with singleton service', () async {
-    final _FakeStoreClient storeClient = _FakeStoreClient();
-    final _FakeConnectivityClient connectivityClient =
-        _FakeConnectivityClient(<ConnectivityResult>[ConnectivityResult.wifi]);
-    final IAPService service = IAPService(
-      storeClient: storeClient,
-      secureStore: _FakeStore(),
-      connectivityClient: connectivityClient,
-    );
+  test(
+    'repeated startup restore is idempotent with singleton service',
+    () async {
+      final _FakeStoreClient storeClient = _FakeStoreClient();
+      final _FakeConnectivityClient connectivityClient =
+          _FakeConnectivityClient(<ConnectivityResult>[
+            ConnectivityResult.wifi,
+          ]);
+      final IAPService service = IAPService(
+        storeClient: storeClient,
+        secureStore: _FakeStore(),
+        connectivityClient: connectivityClient,
+      );
 
-    await service.attemptStartupReconciliation();
-    await service.attemptStartupReconciliation();
+      await service.attemptStartupReconciliation();
+      await service.attemptStartupReconciliation();
 
-    expect(storeClient.restoreCalls, equals(2));
-    expect(service.hasPendingReconciliation.value, isFalse);
-  });
+      expect(storeClient.restoreCalls, equals(2));
+      expect(service.hasPendingReconciliation.value, isFalse);
+    },
+    timeout: const Timeout(Duration(seconds: 10)),
+  );
 }
