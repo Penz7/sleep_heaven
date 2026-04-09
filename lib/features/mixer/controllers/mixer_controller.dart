@@ -33,6 +33,9 @@ class MixerController extends GetxController {
   Timer? _timerCountdown;
 
   bool get canAddTrack => tracks.length < maxTracks;
+  int get localTrackCount =>
+      tracks.values.where((MixerTrack t) => t.localTrack != null).length;
+  bool get canAddLocalTrack => localTrackCount < 1;
   int? _ownershipToken;
 
   @override
@@ -90,11 +93,15 @@ class MixerController extends GetxController {
     }
   }
 
-  /// Thêm track từ file local (premium only – gọi từ UI đã check)
+  /// Thêm track từ file local (giới hạn tối đa 1 track local trong mỗi mix)
   Future<void> addLocalTrack(LocalTrackModel localTrack) async {
     final trackId = localTrack.id;
     if (tracks.containsKey(trackId)) return;
     if (tracks.length >= maxTracks) return;
+    if (!canAddLocalTrack) {
+      Get.toNamed(Routes.premium);
+      return;
+    }
 
     final session = await AudioSession.instance;
     await session.configure(

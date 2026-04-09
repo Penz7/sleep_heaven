@@ -17,8 +17,8 @@ class LocalSoundProvider {
 
   static Future<void> _tryWarmupCatalog() async {
     try {
-      final CatalogLoadResult result = await _catalogLoader
-          .loadStartupSliceFromAssets(startupLimit: startupWarmupLimit);
+      // Load full catalog to avoid missing later categories (e.g. nature).
+      final CatalogLoadResult result = await _catalogLoader.loadFromAssets();
       _catalogCache.setSnapshot(version: result.version, sounds: result.sounds);
     } catch (_) {
       // Keep backward-compatible hardcoded fallback if catalog load fails.

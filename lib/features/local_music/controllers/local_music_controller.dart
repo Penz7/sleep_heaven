@@ -10,7 +10,7 @@ import '../../../data/models/local_track_model.dart';
 import '../../../data/repositories/local_track_repository.dart';
 import '../../../routes/app_routes.dart';
 
-/// Controller cho tính năng thêm nhạc từ thiết bị (premium only)
+/// Controller cho tính năng thêm nhạc từ thiết bị.
 class LocalMusicController extends GetxController {
   LocalMusicController(this._repository, this._iapService);
 
@@ -32,9 +32,10 @@ class LocalMusicController extends GetxController {
     localTracks.assignAll(list);
   }
 
-  /// Chọn file audio từ thiết bị và thêm vào danh sách
-  Future<void> pickAndAddTrack() async {
-    if (!isPremium) {
+  /// Chọn file audio từ thiết bị và thêm vào danh sách.
+  /// [requirePremium] = false dùng cho mixer (cho phép free thêm local track).
+  Future<void> pickAndAddTrack({bool requirePremium = true}) async {
+    if (requirePremium && !isPremium) {
       Get.toNamed(Routes.premium);
       return;
     }

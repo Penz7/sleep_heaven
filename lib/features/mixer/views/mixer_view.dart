@@ -3,8 +3,6 @@ import 'package:get/get.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../data/repositories/sound_repository.dart';
-import '../../../routes/app_routes.dart';
-import '../../local_music/controllers/local_music_controller.dart';
 import '../../local_music/views/local_music_sheet.dart';
 import '../../player/controllers/player_controller.dart';
 import '../controllers/mixer_controller.dart';
@@ -89,7 +87,6 @@ class _AddSoundSheetState extends State<_AddSoundSheet> {
   Widget build(BuildContext context) {
     final repo = Get.find<SoundRepository>();
     final sounds = repo.getAllSounds();
-    final localMusicCtrl = Get.find<LocalMusicController>();
 
     return Container(
       height: 450,
@@ -120,34 +117,15 @@ class _AddSoundSheetState extends State<_AddSoundSheet> {
                 ),
               ),
               Expanded(
-                child: Obx(() {
-                  final isPremium = localMusicCtrl.isPremium;
-                  return TextButton(
-                    onPressed: () {
-                      if (!isPremium) {
-                        Get.back();
-                        Get.toNamed(Routes.premium);
-                      } else {
-                        setState(() => _selectedTab = 1);
-                      }
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (!isPremium) ...[
-                          const Icon(Icons.lock, size: 16),
-                          const SizedBox(width: 4),
-                        ],
-                        Text(
-                          'From Device',
-                          style: TextStyle(
-                            color: _selectedTab == 1 ? AppColors.accent : null,
-                          ),
-                        ),
-                      ],
+                child: TextButton(
+                  onPressed: () => setState(() => _selectedTab = 1),
+                  child: Text(
+                    'From Device',
+                    style: TextStyle(
+                      color: _selectedTab == 1 ? AppColors.accent : null,
                     ),
-                  );
-                }),
+                  ),
+                ),
               ),
             ],
           ),
@@ -178,21 +156,21 @@ class _AddSoundSheetState extends State<_AddSoundSheet> {
                       },
                     );
                   })
-                : Obx(() {
-                    if (!localMusicCtrl.isPremium) {
-                      return const Center(
-                        child: Text(
-                          'Premium is required to add music from your device',
-                        ),
-                      );
-                    }
-                    return LocalMusicSheet(
+                : Obx(
+                    () => LocalMusicSheet(
+                      requirePremiumForPicking: false,
+                      canPickTrack: widget.controller.canAddLocalTrack,
+                      canSelectTrack: widget.controller.canAddLocalTrack,
+                      trackLimitMessage:
+                          'Only 1 local sound can be added to this mix.',
+                      isTrackAlreadyAdded: (track) =>
+                          widget.controller.tracks.containsKey(track.id),
                       onTrackSelected: (track) {
                         Get.back();
                         widget.controller.addLocalTrack(track);
                       },
-                    );
-                  }),
+                    ),
+                  ),
           ),
         ],
       ),

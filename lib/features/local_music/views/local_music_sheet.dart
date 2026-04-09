@@ -3,13 +3,27 @@ import 'package:get/get.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../data/models/local_track_model.dart';
+import '../../../routes/app_routes.dart';
 import '../controllers/local_music_controller.dart';
 
 /// Bottom sheet hiển thị danh sách local tracks và nút thêm mới
 class LocalMusicSheet extends GetView<LocalMusicController> {
-  const LocalMusicSheet({super.key, this.onTrackSelected});
+  const LocalMusicSheet({
+    super.key,
+    this.onTrackSelected,
+    this.requirePremiumForPicking = true,
+    this.canPickTrack = true,
+    this.canSelectTrack = true,
+    this.trackLimitMessage,
+    this.isTrackAlreadyAdded,
+  });
 
   final void Function(LocalTrackModel track)? onTrackSelected;
+  final bool requirePremiumForPicking;
+  final bool canPickTrack;
+  final bool canSelectTrack;
+  final String? trackLimitMessage;
+  final bool Function(LocalTrackModel track)? isTrackAlreadyAdded;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +49,13 @@ class LocalMusicSheet extends GetView<LocalMusicController> {
                 ),
                 IconButton(
                   onPressed: () async {
-                    await controller.pickAndAddTrack();
+                    if (!canPickTrack) {
+                      Get.toNamed(Routes.premium);
+                      return;
+                    }
+                    await controller.pickAndAddTrack(
+                      requirePremium: requirePremiumForPicking,
+                    );
                   },
                   icon: const Icon(Icons.add_circle_outline),
                   color: AppColors.accent,
@@ -69,6 +89,8 @@ class LocalMusicSheet extends GetView<LocalMusicController> {
                 itemCount: controller.localTracks.length,
                 itemBuilder: (context, index) {
                   final track = controller.localTracks[index];
+                  final bool alreadyAdded =
+                      isTrackAlreadyAdded?.call(track) ?? false;
                   return ListTile(
                     leading: const Icon(
                       Icons.audio_file,
@@ -78,10 +100,18 @@ class LocalMusicSheet extends GetView<LocalMusicController> {
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        IconButton(
-                          icon: const Icon(Icons.add),
-                          onPressed: () => onTrackSelected?.call(track),
-                        ),
+                        alreadyAdded
+                            ? const Icon(Icons.check, color: Colors.white70)
+                            : IconButton(
+                                icon: const Icon(Icons.add),
+                                onPressed: () {
+                                  if (!canSelectTrack) {
+                                    Get.toNamed(Routes.premium);
+                                    return;
+                                  }
+                                  onTrackSelected?.call(track);
+                                },
+                              ),
                         IconButton(
                           icon: const Icon(
                             Icons.delete_outline,
