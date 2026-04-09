@@ -619,12 +619,14 @@ class _ExpandedBubblePanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String subtitle = switch (source) {
-      _ActivePlaybackSource.player => countdown > Duration.zero
-          ? 'Sleep timer: ${countdown.formatted}'
-          : 'Now playing',
-      _ActivePlaybackSource.mixer => countdown > Duration.zero
-          ? 'Sleep timer: ${countdown.formatted}'
-          : 'Mix session',
+      _ActivePlaybackSource.player =>
+        countdown > Duration.zero
+            ? 'Sleep timer: ${countdown.formatted}'
+            : 'Now playing',
+      _ActivePlaybackSource.mixer =>
+        countdown > Duration.zero
+            ? 'Sleep timer: ${countdown.formatted}'
+            : 'Mix session',
       _ => 'Audio session',
     };
     final List<Widget> infoAndActions = <Widget>[

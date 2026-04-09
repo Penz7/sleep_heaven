@@ -74,7 +74,8 @@ class MixerBottomSection extends StatelessWidget {
                             padding: const EdgeInsets.only(right: 8),
                             child: _TimerChip(
                               label: option.$2,
-                              selected: controller.timerMinutes.value == option.$1,
+                              selected:
+                                  controller.timerMinutes.value == option.$1,
                               onTap: () => controller.setTimer(option.$1),
                             ),
                           ),
@@ -211,7 +212,9 @@ class _TimerChip extends StatelessWidget {
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: selected ? AppColors.accent : Colors.white.withValues(alpha: 0.08),
+          color: selected
+              ? AppColors.accent
+              : Colors.white.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(999),
         ),
         child: Text(
