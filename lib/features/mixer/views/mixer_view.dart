@@ -6,13 +6,30 @@ import '../../../data/repositories/sound_repository.dart';
 import '../../../routes/app_routes.dart';
 import '../../local_music/controllers/local_music_controller.dart';
 import '../../local_music/views/local_music_sheet.dart';
+import '../../player/controllers/player_controller.dart';
 import '../controllers/mixer_controller.dart';
 import 'sections/active_sounds_section.dart';
 import 'sections/mixer_bottom_section.dart';
 import 'sections/mixer_header_section.dart';
 
-class MixerView extends GetView<MixerController> {
+class MixerView extends StatefulWidget {
   const MixerView({super.key});
+
+  @override
+  State<MixerView> createState() => _MixerViewState();
+}
+
+class _MixerViewState extends State<MixerView> {
+  late final MixerController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = Get.find<MixerController>();
+    if (Get.isRegistered<PlayerController>()) {
+      Get.find<PlayerController>().stop();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

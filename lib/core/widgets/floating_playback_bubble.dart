@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 
 import '../../features/mixer/controllers/mixer_controller.dart';
 import '../../features/player/controllers/player_controller.dart';
+import '../utils/extensions.dart';
 import '../services/navigation_state_service.dart';
 import '../../routes/app_routes.dart';
 
@@ -244,6 +245,7 @@ class _FloatingPlaybackBubbleState extends State<FloatingPlaybackBubble>
                                     playerController: playerController,
                                     mixerController: mixerController,
                                   ),
+                                  countdown: state.countdown,
                                   onBubbleTap: _onPrimaryTap,
                                   onBubbleDoubleTap: () =>
                                       _openSourceRoute(state.source),
@@ -256,6 +258,7 @@ class _FloatingPlaybackBubbleState extends State<FloatingPlaybackBubble>
                                 )
                               : _CollapsedBubble(
                                   isPlaying: state.isPlaying,
+                                  countdown: state.countdown,
                                   onTap: _onPrimaryTap,
                                   onDoubleTap: () =>
                                       _openSourceRoute(state.source),
@@ -292,6 +295,7 @@ class _FloatingPlaybackBubbleState extends State<FloatingPlaybackBubble>
         source: _ActivePlaybackSource.mixer,
         visible: true,
         isPlaying: mixerController.isPlayingRx.value,
+        countdown: mixerController.remainingTime.value,
       );
     }
     if (playerVisible) {
@@ -299,12 +303,14 @@ class _FloatingPlaybackBubbleState extends State<FloatingPlaybackBubble>
         source: _ActivePlaybackSource.player,
         visible: true,
         isPlaying: playerController.isPlaying.value,
+        countdown: playerController.remainingTime.value,
       );
     }
     return const _PlaybackBubbleState(
       source: _ActivePlaybackSource.none,
       visible: false,
       isPlaying: false,
+      countdown: Duration.zero,
     );
   }
 
@@ -524,6 +530,7 @@ class _FloatingPlaybackBubbleState extends State<FloatingPlaybackBubble>
 class _CollapsedBubble extends StatelessWidget {
   const _CollapsedBubble({
     required this.isPlaying,
+    required this.countdown,
     required this.onTap,
     required this.onDoubleTap,
     required this.discRotationController,
@@ -531,6 +538,7 @@ class _CollapsedBubble extends StatelessWidget {
   });
 
   final bool isPlaying;
+  final Duration countdown;
   final VoidCallback onTap;
   final VoidCallback onDoubleTap;
   final AnimationController discRotationController;
@@ -556,10 +564,24 @@ class _CollapsedBubble extends StatelessWidget {
               hint:
                   'Tap to focus, tap again to expand, double tap to open source',
               button: true,
-              child: _BubbleDisc(
-                isPlaying: isPlaying,
-                size: _FloatingPlaybackBubbleState._bubbleSize,
-                discRotationController: discRotationController,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: <Widget>[
+                  _BubbleDisc(
+                    isPlaying: isPlaying,
+                    size: _FloatingPlaybackBubbleState._bubbleSize,
+                    discRotationController: discRotationController,
+                  ),
+                  if (countdown > Duration.zero)
+                    Positioned(
+                      right: -4,
+                      bottom: -4,
+                      child: _CountdownBadge(
+                        countdown: countdown,
+                        compact: true,
+                      ),
+                    ),
+                ],
               ),
             ),
           ),
@@ -574,6 +596,7 @@ class _ExpandedBubblePanel extends StatelessWidget {
     required this.source,
     required this.isPlaying,
     required this.title,
+    required this.countdown,
     required this.onBubbleTap,
     required this.onBubbleDoubleTap,
     required this.onPlayPause,
@@ -585,6 +608,7 @@ class _ExpandedBubblePanel extends StatelessWidget {
   final _ActivePlaybackSource source;
   final bool isPlaying;
   final String title;
+  final Duration countdown;
   final VoidCallback onBubbleTap;
   final VoidCallback onBubbleDoubleTap;
   final VoidCallback onPlayPause;
@@ -595,8 +619,12 @@ class _ExpandedBubblePanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String subtitle = switch (source) {
-      _ActivePlaybackSource.player => 'Now playing',
-      _ActivePlaybackSource.mixer => 'Mix session',
+      _ActivePlaybackSource.player => countdown > Duration.zero
+          ? 'Sleep timer: ${countdown.formatted}'
+          : 'Now playing',
+      _ActivePlaybackSource.mixer => countdown > Duration.zero
+          ? 'Sleep timer: ${countdown.formatted}'
+          : 'Mix session',
       _ => 'Audio session',
     };
     final List<Widget> infoAndActions = <Widget>[
@@ -806,14 +834,47 @@ class _BubbleDisc extends StatelessWidget {
   }
 }
 
+class _CountdownBadge extends StatelessWidget {
+  const _CountdownBadge({required this.countdown, required this.compact});
+
+  final Duration countdown;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: compact ? 6 : 8,
+        vertical: compact ? 3 : 4,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.72),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.24)),
+      ),
+      child: Text(
+        countdown.formatted,
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: compact ? 10 : 11,
+          fontWeight: FontWeight.w700,
+          height: 1.0,
+        ),
+      ),
+    );
+  }
+}
+
 class _PlaybackBubbleState {
   const _PlaybackBubbleState({
     required this.source,
     required this.visible,
     required this.isPlaying,
+    required this.countdown,
   });
 
   final _ActivePlaybackSource source;
   final bool visible;
   final bool isPlaying;
+  final Duration countdown;
 }

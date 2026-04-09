@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../../../core/services/audio_handler.dart';
+import '../../../core/utils/audio_helpers.dart';
 import '../../../data/models/local_track_model.dart';
 import '../../../data/models/sound_model.dart';
 import '../../../data/repositories/sound_repository.dart';
@@ -23,9 +24,13 @@ class MixerController extends GetxController {
   // Observable được cập nhật khi bất kỳ player nào thay đổi trạng thái
   final RxBool isPlayingRx = false.obs;
   final RxBool hasActiveSession = false.obs;
+  final RxInt timerMinutes = 0.obs;
+  final Rx<Duration> remainingTime = Duration.zero.obs;
 
   // Lưu subscription của từng player để hủy khi remove track
   final Map<String, StreamSubscription<bool>> _playingSubscriptions = {};
+  DateTime? _scheduledStopAt;
+  Timer? _timerCountdown;
 
   bool get canAddTrack => tracks.length < maxTracks;
   int? _ownershipToken;
@@ -172,12 +177,14 @@ class MixerController extends GetxController {
           .play(); // Không await - play() resolve khi playback kết thúc (loop = vô hạn)
     }
     hasActiveSession.value = true;
+    _startTimerIfSet();
   }
 
   Future<void> pauseAll() async {
     for (final track in tracks.values) {
       await track.player.pause();
     }
+    _cancelTimers();
   }
 
   void _playAllFromRemote() {
@@ -193,14 +200,85 @@ class MixerController extends GetxController {
       await track.player.pause();
       await track.player.seek(Duration.zero);
     }
+    _resetSleepTimerState();
     isPlayingRx.value = false;
     hasActiveSession.value = false;
     _handler.setPlaybackState(playing: false, position: Duration.zero);
     _releaseOwnership();
   }
 
+  void setTimer(int minutes) {
+    timerMinutes.value = minutes;
+    if (minutes <= 0) {
+      _resetSleepTimerState();
+      _handler.setPlaybackState(
+        playing: isPlayingRx.value,
+        position: Duration.zero,
+      );
+      return;
+    }
+    if (isPlayingRx.value) {
+      _startTimerIfSet();
+    }
+  }
+
+  void _startTimerIfSet() {
+    _cancelTimers();
+    if (timerMinutes.value <= 0 || !isPlayingRx.value) {
+      return;
+    }
+
+    final Duration timerDuration = Duration(minutes: timerMinutes.value);
+    _scheduledStopAt = DateTime.now().add(timerDuration);
+    remainingTime.value = timerDuration;
+
+    _timerCountdown = Timer.periodic(const Duration(seconds: 1), (_) {
+      final DateTime? stopAt = _scheduledStopAt;
+      if (stopAt == null) {
+        return;
+      }
+      final Duration remaining = stopAt.difference(DateTime.now());
+      if (remaining <= Duration.zero) {
+        remainingTime.value = Duration.zero;
+        _cancelTimers();
+        _fadeOutAndStopAll();
+      } else {
+        remainingTime.value = remaining;
+      }
+    });
+  }
+
+  Future<void> _fadeOutAndStopAll() async {
+    final List<MixerTrack> snapshot = tracks.values.toList(growable: false);
+    for (final MixerTrack track in snapshot) {
+      final double currentVol = track.player.volume;
+      await AudioHelpers.fadeOut(
+        currentVol,
+        1200,
+        (double v) => track.player.setVolume(v),
+      );
+    }
+    await stopAll();
+    for (final MixerTrack track in snapshot) {
+      await track.player.setVolume(track.volume.value);
+    }
+  }
+
+  void _cancelTimers() {
+    _timerCountdown?.cancel();
+    _timerCountdown = null;
+    _scheduledStopAt = null;
+  }
+
+  void _resetSleepTimerState() {
+    _cancelTimers();
+    remainingTime.value = Duration.zero;
+    timerMinutes.value = 0;
+  }
+
   @override
   void onClose() {
+    _cancelTimers();
     for (final sub in _playingSubscriptions.values) {
       sub.cancel();
     }

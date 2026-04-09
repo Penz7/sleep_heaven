@@ -55,7 +55,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (currentSound.value?.id == args.id) {
       return;
     }
-    loadSound(args);
+    stop().then((_) => loadSound(args));
   }
 
   /// Kiểm tra khi app resume từ background: nếu timer đã hết trong lúc background thì dừng ngay
@@ -164,11 +164,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   Future<void> stop() async {
     await _player.stop();
-    _cancelTimers();
-    // Xóa timer trên lock screen và khôi phục audio file duration
-    _handler.clearTimer(_player.duration);
-    remainingTime.value = Duration.zero;
-    timerMinutes.value = 0;
+    _resetSleepTimerState();
     _releaseOwnership();
     hasActiveSession.value = false;
   }
@@ -234,6 +230,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _timerCountdown?.cancel();
     _timerCountdown = null;
     _scheduledStopAt = null;
+  }
+
+  void _resetSleepTimerState() {
+    _cancelTimers();
+    // Xóa timer trên lock screen và khôi phục audio file duration.
+    _handler.clearTimer(_player.duration);
+    remainingTime.value = Duration.zero;
+    timerMinutes.value = 0;
   }
 
   Future<void> _fadeOutAndStop() async {

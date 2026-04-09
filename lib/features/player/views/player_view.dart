@@ -5,10 +5,31 @@ import 'package:get/get.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/extensions.dart';
+import '../../mixer/controllers/mixer_controller.dart';
 import '../controllers/player_controller.dart';
 
-class PlayerView extends GetView<PlayerController> {
+class PlayerView extends StatefulWidget {
   const PlayerView({super.key});
+
+  @override
+  State<PlayerView> createState() => _PlayerViewState();
+}
+
+class _PlayerViewState extends State<PlayerView> {
+  late final PlayerController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = Get.find<PlayerController>();
+    if (Get.isRegistered<MixerController>()) {
+      final MixerController mixerController = Get.find<MixerController>();
+      if (mixerController.hasActiveSession.value ||
+          mixerController.isPlayingRx.value) {
+        mixerController.stopAll();
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
